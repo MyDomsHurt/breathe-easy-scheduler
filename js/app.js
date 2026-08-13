@@ -23,9 +23,28 @@ const TEAM_COLORS = {
 
 async function init() {
   try {
-    const res = await fetch('data/jobs.json');
-    allJobs = await res.json();
-    // sort by date + time roughly
+    // Load per-week files (smaller payloads) and merge
+    const weeks = [1, 2, 3, 4];
+    const results = await Promise.all(
+      weeks.map(w =>
+        fetch(`data/jobs-w${w}.json`)
+          .then(r => {
+            if (!r.ok) throw new Error(`jobs-w${w}.json ${r.status}`);
+            return r.json();
+          })
+          .catch(() => [])
+      )
+    );
+    allJobs = results.flat();
+
+    // Fallback: single jobs.json if week files missing
+    if (allJobs.length === 0) {
+      const res = await fetch('data/jobs.json');
+      if (res.ok) allJobs = await res.json();
+    }
+
+    if (allJobs.length === 0) throw new Error('No job data found');
+
     allJobs.sort((a, b) => {
       if (a.date !== b.date) return a.date.localeCompare(b.date);
       return (a.time || '').localeCompare(b.time || '');
@@ -37,8 +56,8 @@ async function init() {
   } catch (err) {
     document.getElementById('jobsContainer').innerHTML =
       `<div class="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4">
-        Failed to load jobs.json. Make sure you are serving this folder via a local server
-        (e.g. <code class="bg-red-100 px-1 rounded">npx serve .</code> or Python http.server).
+        Failed to load job data. Serve this folder over HTTP
+        (e.g. <code class="bg-red-100 px-1 rounded">npx serve .</code>).
         <br><span class="text-sm">${err.message}</span>
       </div>`;
   }
@@ -370,10 +389,10 @@ function formatMoney(n) {
 function esc(str) {
   if (str == null) return '';
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 // Boot
