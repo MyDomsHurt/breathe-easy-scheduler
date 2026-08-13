@@ -1,0 +1,18 @@
+/* Small extras beyond Tailwind */
+.job-card {
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.job-card:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+.return-badge {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.team-chip {
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+}
+/* Custom scrollbar for modal */
+#modalBody::-webkit-scrollbar { width: 6px; }
+#modalBody::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
