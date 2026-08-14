@@ -13,25 +13,17 @@
   font-size: 0.7rem;
   letter-spacing: 0.02em;
 }
-/* Custom scrollbar for modal */
 #modalBody::-webkit-scrollbar { width: 6px; }
 #modalBody::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-
-/* ========== Technician mobile layout ========== */
+/* Technician mobile: jobs first — hide filters panel entirely */
 @media (max-width: 1023px) {
-  /* Compact filters – hide snapshot + footer note */
-  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
-  body.role-tech aside > .text-xs.text-slate-400 {
+  body.role-tech aside {
     display: none !important;
   }
 
-  body.role-tech #searchInput {
-    font-size: 16px; /* prevent iOS zoom */
-  }
-
   body.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
-    padding-top: 0.75rem !important;
+    padding-top: 0.5rem !important;
     padding-bottom: 1rem !important;
   }
 
@@ -47,14 +39,14 @@
     padding: 0.75rem;
   }
 
-  /* Day headers stick under header + range bar */
   body.role-tech section > .sticky {
     top: 108px;
   }
 }
 
 @media (min-width: 1024px) {
-  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2) {
+  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
+  body.role-tech aside > .text-xs.text-slate-400 {
     display: none !important;
   }
 }
