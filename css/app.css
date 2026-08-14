@@ -1,10 +1,18 @@
 /* Small extras beyond Tailwind */
 .job-card {
   transition: box-shadow 0.15s ease, transform 0.15s ease;
+  max-width: 100%;
+  overflow: hidden;
+  min-width: 0;
 }
 .job-card:hover {
   box-shadow: 0 4px 14px rgba(0,0,0,0.08);
   transform: translateY(-1px);
+}
+.job-card p,
+.job-card div {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .return-badge {
   background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -24,7 +32,6 @@
   body.role-tech main > .flex.items-center.justify-between.mb-4 { margin-bottom: 0.5rem !important; }
   body.role-tech #viewTitle { font-size: 1rem; }
   body.role-tech .job-card { padding: 0.75rem; }
-  body.role-tech section > .sticky { top: calc(var(--app-header-h, 57px) + 96px); }
 }
 
 @media (min-width: 1024px) {
@@ -45,12 +52,6 @@ body.compact.role-tech .job-card.compact-card:active {
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 body.compact.role-tech #jobsContainer > section { margin-bottom: 0.75rem !important; }
-body.compact.role-tech section > .sticky {
-  top: calc(var(--app-header-h, 57px) + 96px);
-  padding-top: 0.2rem !important;
-  padding-bottom: 0.2rem !important;
-  margin-bottom: 0.35rem !important;
-}
 body.compact.role-tech #viewTitle,
 body.compact.role-tech main > .flex.items-center.justify-between { display: none !important; }
 body.compact.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
@@ -88,21 +89,30 @@ body.role-tech #returnCount {
   display: none !important;
 }
 
-/* Prevent long notes/URLs from blowing out card width */
-.job-card {
-  max-width: 100%;
-  overflow: hidden;
-  min-width: 0;
-}
-.job-card p,
-.job-card div {
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
 #jobsContainer,
 #jobsContainer > section,
 #jobsContainer .grid {
   max-width: 100%;
   min-width: 0;
   overflow-x: hidden;
+}
+
+/* Day section headers — stick below header + tech range/team bar */
+.day-header-sticky {
+  position: sticky;
+  top: var(--day-sticky-top, 57px);
+  z-index: 20;
+  background: rgba(248, 250, 252, 0.95);
+  backdrop-filter: blur(6px);
+}
+body.role-tech .day-header-sticky {
+  top: var(--day-sticky-top, 140px);
+}
+body.compact.role-tech .day-header-sticky {
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  margin-bottom: 0.35rem;
+}
+.day-section {
+  margin-bottom: 1rem;
 }
