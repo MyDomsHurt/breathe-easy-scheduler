@@ -21,18 +21,19 @@ const TEAM_COLORS = {
   Iggi: 'bg-indigo-100 text-indigo-800'
 };
 
-// Soft pastel backgrounds for district / area highlighting on cards
+// Soft pastel backgrounds matching the original spreadsheet conditional formatting
 const DISTRICT_COLORS = {
-  'HKN':  'bg-sky-50 border-sky-200 text-sky-900',
-  'KLN':  'bg-amber-50 border-amber-200 text-amber-900',
-  'N-T':  'bg-emerald-50 border-emerald-200 text-emerald-900',
-  'N-TW': 'bg-lime-50 border-lime-200 text-lime-900',
-  'HKS':  'bg-violet-50 border-violet-200 text-violet-900',
-  'TKO':  'bg-cyan-50 border-cyan-200 text-cyan-900',
-  'S-K':  'bg-rose-50 border-rose-200 text-rose-900',
-  'L-T':  'bg-indigo-50 border-indigo-200 text-indigo-900'
+  'HKN':  { bg: '#CFE2F3', border: '#9FC5E8', text: '#1e3a5f' },  // light blue
+  'HKS':  { bg: '#9FC5E8', border: '#6FA8DC', text: '#1e3a5f' },  // stronger blue
+  'KLN':  { bg: '#F4CCCC', border: '#EA9999', text: '#5c1a1a' },  // pink / rose
+  'N-T':  { bg: '#FFF2CC', border: '#FFE599', text: '#5c4a00' },  // yellow
+  'N-TW': { bg: '#FCE4D6', border: '#F9CB9C', text: '#5c3a1a' },  // peach / orange
+  'TKO':  { bg: '#B6D7A8', border: '#93C47D', text: '#1e3d14' },  // green
+  'S-K':  { bg: '#D9EAD3', border: '#B6D7A8', text: '#1e3d14' },  // light green
+  'L-T':  { bg: '#D9D2E9', border: '#B4A7D6', text: '#2e1a4a' },  // lavender
+  'L-M':  { bg: '#A2C4C9', border: '#76A5AF', text: '#1a3338' }   // teal (if present)
 };
-const DISTRICT_FALLBACK = 'bg-slate-50 border-slate-200 text-slate-700';
+const DISTRICT_FALLBACK = { bg: '#F3F4F6', border: '#D1D5DB', text: '#374151' };
 
 async function init() {
   try {
@@ -318,10 +319,11 @@ function jobCard(j) {
     ? `<span class="inline-flex items-center text-xs font-semibold bg-white/80 border border-slate-200 text-slate-800 px-2 py-0.5 rounded-md shadow-sm">${esc(j.acs)}</span>`
     : `<span class="inline-flex items-center text-xs font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">No units (Return)</span>`;
 
-  // Address with pastel district colour
-  const distClass = DISTRICT_COLORS[j.district] || DISTRICT_FALLBACK;
+  // Address with pastel district colour (exact match to spreadsheet)
+  const dist = DISTRICT_COLORS[j.district] || DISTRICT_FALLBACK;
   const addressBlock = j.address
-    ? `<div class="mt-2 px-2.5 py-1.5 rounded-lg border text-[12px] leading-snug ${distClass}">
+    ? `<div class="mt-2 px-2.5 py-1.5 rounded-lg border text-[12px] leading-snug"
+            style="background:${dist.bg};border-color:${dist.border};color:${dist.text}">
          <span class="font-medium">${esc(j.address)}</span>
          ${j.district ? `<span class="ml-1.5 opacity-70 text-[10px] font-semibold tracking-wide">${esc(j.district)}</span>` : ''}
        </div>`
