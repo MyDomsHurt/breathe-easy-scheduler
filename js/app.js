@@ -25,21 +25,20 @@ const TEAM_COLORS = {
 
 // Soft pastel backgrounds matching the original spreadsheet conditional formatting
 const DISTRICT_COLORS = {
-  'HKN':  { bg: '#CFE2F3', border: '#9FC5E8', text: '#1e3a5f' },  // light blue
-  'HKS':  { bg: '#9FC5E8', border: '#6FA8DC', text: '#1e3a5f' },  // stronger blue
-  'KLN':  { bg: '#F4CCCC', border: '#EA9999', text: '#5c1a1a' },  // pink / rose
-  'N-T':  { bg: '#FFF2CC', border: '#FFE599', text: '#5c4a00' },  // yellow
-  'N-TW': { bg: '#FCE4D6', border: '#F9CB9C', text: '#5c3a1a' },  // peach / orange
-  'TKO':  { bg: '#B6D7A8', border: '#93C47D', text: '#1e3d14' },  // green
-  'S-K':  { bg: '#D9EAD3', border: '#B6D7A8', text: '#1e3d14' },  // light green
-  'L-T':  { bg: '#D9D2E9', border: '#B4A7D6', text: '#2e1a4a' },  // lavender
-  'L-M':  { bg: '#A2C4C9', border: '#76A5AF', text: '#1a3338' }   // teal (if present)
+  'HKN':  { bg: '#CFE2F3', border: '#9FC5E8', text: '#1e3a5f' },
+  'HKS':  { bg: '#9FC5E8', border: '#6FA8DC', text: '#1e3a5f' },
+  'KLN':  { bg: '#F4CCCC', border: '#EA9999', text: '#5c1a1a' },
+  'N-T':  { bg: '#FFF2CC', border: '#FFE599', text: '#5c4a00' },
+  'N-TW': { bg: '#FCE4D6', border: '#F9CB9C', text: '#5c3a1a' },
+  'TKO':  { bg: '#B6D7A8', border: '#93C47D', text: '#1e3d14' },
+  'S-K':  { bg: '#D9EAD3', border: '#B6D7A8', text: '#1e3d14' },
+  'L-T':  { bg: '#D9D2E9', border: '#B4A7D6', text: '#2e1a4a' },
+  'L-M':  { bg: '#A2C4C9', border: '#76A5AF', text: '#1a3338' }
 };
 const DISTRICT_FALLBACK = { bg: '#F3F4F6', border: '#D1D5DB', text: '#374151' };
 
 async function init() {
   try {
-    // Prefer manifest of small part files, then fall back to single jobs.json
     let files = [];
     try {
       const man = await fetch('data/manifest.json');
@@ -105,7 +104,6 @@ function buildDateSelect() {
 }
 
 function bindEvents() {
-  // Week
   document.querySelectorAll('.week-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       setActive('.week-btn', btn);
@@ -114,7 +112,6 @@ function bindEvents() {
     });
   });
 
-  // Team
   document.getElementById('teamFilters').addEventListener('click', e => {
     const btn = e.target.closest('.team-btn');
     if (!btn) return;
@@ -123,7 +120,6 @@ function bindEvents() {
     applyFilters();
   });
 
-  // Type
   document.querySelectorAll('.type-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       setActive('.type-btn', btn);
@@ -132,13 +128,11 @@ function bindEvents() {
     });
   });
 
-  // Date select
   document.getElementById('dateSelect').addEventListener('change', e => {
     currentFilters.date = e.target.value;
     applyFilters();
   });
 
-  // Search
   let searchTimer;
   document.getElementById('searchInput').addEventListener('input', e => {
     clearTimeout(searchTimer);
@@ -148,7 +142,6 @@ function bindEvents() {
     }, 200);
   });
 
-  // View mode
   document.getElementById('viewByDate').addEventListener('click', () => {
     viewMode = 'date';
     setActive('.view-btn', document.getElementById('viewByDate'));
@@ -160,25 +153,20 @@ function bindEvents() {
     render();
   });
 
-  // Modal
   document.getElementById('modalClose').addEventListener('click', closeModal);
   document.getElementById('modalBackdrop').addEventListener('click', closeModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-  // Role toggle
   document.getElementById('roleOffice').addEventListener('click', () => setRole('office'));
   document.getElementById('roleTech').addEventListener('click', () => setRole('tech'));
   applyRoleUI();
 
-  // Quick date range (technician)
   document.querySelectorAll('.range-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       currentFilters.range = btn.dataset.range;
-      // Clear the precise date select so range takes priority
       currentFilters.date = 'all';
       const dateSelect = document.getElementById('dateSelect');
       if (dateSelect) dateSelect.value = 'all';
-      // Active styles
       document.querySelectorAll('.range-btn').forEach(b => {
         b.classList.remove('bg-brand-600', 'text-white');
         b.classList.add('bg-slate-100', 'text-slate-700');
@@ -191,10 +179,13 @@ function bindEvents() {
 }
 
 function setRole(role) {
+  if (window.__forcedRole === 'tech') {
+    role = 'tech';
+  }
+
   roleMode = role;
   localStorage.setItem('be-role', role);
   if (role === 'tech') {
-    // Default techs onto Today for a clean mobile start
     currentFilters.range = 'today';
     currentFilters.date = 'all';
     document.querySelectorAll('.range-btn').forEach(b => {
@@ -216,15 +207,12 @@ function applyRoleUI() {
   const revenueEl = document.getElementById('revenueTotal');
   const rangeBar = document.getElementById('techRangeBar');
 
-  // Week filter block (label + buttons)
   const weekFilters = document.getElementById('weekFilters');
   const dateSelect = document.getElementById('dateSelect');
 
-  // Hide the week section and the date dropdown in tech mode
   const hideEls = [];
   if (weekFilters) {
     hideEls.push(weekFilters);
-    // Also hide the "Week" label that sits just above it
     const prev = weekFilters.previousElementSibling;
     if (prev && prev.tagName === 'LABEL') hideEls.push(prev);
   }
@@ -240,7 +228,6 @@ function applyRoleUI() {
     revenueEl.classList.add('hidden');
     if (rangeBar) rangeBar.classList.remove('hidden');
     hideEls.forEach(el => el.classList.add('hidden'));
-    // Reset week/date filters so they don't interfere
     currentFilters.week = 'all';
     currentFilters.date = 'all';
   } else {
@@ -263,7 +250,6 @@ function setActive(selector, activeBtn) {
 
 function getRangeBounds(range) {
   const now = new Date();
-  // Normalise to local date (HK)
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   const toISO = (d) => {
@@ -279,8 +265,7 @@ function getRangeBounds(range) {
   }
 
   if (range === 'this_week') {
-    // Monday as start of week
-    const day = today.getDay(); // 0 Sun … 6 Sat
+    const day = today.getDay();
     const mondayOffset = day === 0 ? -6 : 1 - day;
     const monday = new Date(today);
     monday.setDate(today.getDate() + mondayOffset);
@@ -301,11 +286,10 @@ function getRangeBounds(range) {
     return { start: toISO(nextMonday), end: toISO(nextSunday) };
   }
 
-  return null; // fallback
+  return null;
 }
 
 function applyFilters() {
-  // Range filter (Today / This Week / Next Week) only applies in Technician mode
   const bounds = roleMode === 'tech' ? getRangeBounds(currentFilters.range) : null;
 
   filtered = allJobs.filter(j => {
@@ -462,12 +446,10 @@ function jobCard(j) {
       : `<span class="text-slate-400 text-xs">—</span>`;
   }
 
-  // Units (ACs) — always show clearly
   const units = j.acs
     ? `<span class="inline-flex items-center text-xs font-semibold bg-white/80 border border-slate-200 text-slate-800 px-2 py-0.5 rounded-md shadow-sm">${esc(j.acs)}</span>`
     : `<span class="inline-flex items-center text-xs font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">No units (Return)</span>`;
 
-  // Address with pastel district colour (exact match to spreadsheet)
   const dist = DISTRICT_COLORS[j.district] || DISTRICT_FALLBACK;
   const addressBlock = j.address
     ? `<div class="mt-2 px-2.5 py-1.5 rounded-lg border text-[12px] leading-snug"
@@ -512,30 +494,20 @@ function bindCardClicks() {
   });
 }
 
-
-// Clean address for Google Maps – remove flat/floor/unit/tower numbers
-// so the pin lands on the building rather than failing on unit detail
 function cleanAddressForMaps(raw) {
   if (!raw) return '';
   let a = String(raw).trim();
 
-  // Remove common unit / floor / room prefixes (HK style)
   a = a
-    // Flat / Unit / Room / Apt + letter/number
     .replace(/^(Flat|Unit|Room|Apt|Apartment|Suite)\s*[A-Z0-9\-\/]+[,\s]*/i, '')
-    // Floor patterns: 15/F, 15F, 15th Floor, Floor 15, etc.
     .replace(/\b\d{1,2}\s*(\/F|F|th\s*Floor|st\s*Floor|nd\s*Floor|rd\s*Floor|Floor)\b[,\s]*/gi, '')
     .replace(/\b(Floor|Level)\s*\d{1,2}\b[,\s]*/gi, '')
-    // Tower / Block + number/letter at the start of remaining string
     .replace(/^(Tower|Block|Blk)\s*[A-Z0-9\-]+[,\s]*/i, '')
-    // Leading numbers that look like unit numbers (e.g. "20C, Tower 3")
     .replace(/^\d{1,3}[A-Z]?\s*[,\-]\s*/i, '')
-    // Clean up leftover punctuation and spaces
     .replace(/^[,\s\-]+/, '')
     .replace(/\s{2,}/g, ' ')
     .trim();
 
-  // If we stripped too much, fall back to original
   if (a.length < 8) return raw.trim();
   return a;
 }
@@ -545,7 +517,6 @@ function openModal(j) {
   document.getElementById('modalSub').textContent =
     `${formatDate(j.date)} · ${j.time || '—'} · ${j.team_lead}`;
 
-  // Reliable Google Maps link – cleaned address (no flat/floor numbers)
   const mapsUrl = j.address
     ? `https://maps.google.com/?q=${encodeURIComponent(cleanAddressForMaps(j.address))}`
     : null;
@@ -612,7 +583,6 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
-// Helpers
 function groupBy(arr, keyFn) {
   return arr.reduce((acc, item) => {
     const k = keyFn(item);
@@ -640,5 +610,18 @@ function esc(str) {
     .replace(/"/g, '"');
 }
 
-// Boot
-init();
+// Boot only after Firebase auth confirms the user
+window.onAuthReady = function(role, user) {
+  window.__forcedRole = role;
+  if (role === 'tech') {
+    roleMode = 'tech';
+    localStorage.setItem('be-role', 'tech');
+    const toggle = document.getElementById('roleToggle');
+    if (toggle) toggle.classList.add('hidden');
+  } else {
+    roleMode = localStorage.getItem('be-role') || 'office';
+    const toggle = document.getElementById('roleToggle');
+    if (toggle) toggle.classList.remove('hidden');
+  }
+  init();
+};
