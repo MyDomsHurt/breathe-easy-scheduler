@@ -67,52 +67,65 @@ body.role-tech #revenueTotal {
   overflow-x: hidden;
 }
 
-/* Day headers: always lead their job group. Sticky only on large screens. */
-.day-header-sticky {
-  position: static;
-  z-index: 20;
-  background: #f1f5f9;
+/* ===== Day blocks: each date is one solid container ===== */
+.day-block {
+  background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-  padding: 0.6rem 0.85rem;
-  margin-bottom: 0.65rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.day-block-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  background: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
 }
-.day-section {
-  margin-bottom: 1.5rem;
-  clear: both;
+.day-block-date {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #0c4a6e;
+  line-height: 1.2;
+  margin: 0;
 }
-.day-section + .day-section {
-  margin-top: 0.25rem;
-  padding-top: 0.25rem;
+.day-block-meta {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0.15rem 0 0;
+  line-height: 1.2;
+}
+.day-block-body {
+  padding: 0.75rem;
 }
 
-/* Desktop office only: sticky day bar under main header */
-@media (min-width: 1024px) {
-  body.role-office .day-header-sticky {
-    position: sticky;
-    top: var(--app-header-h, 57px);
-    background: rgba(241, 245, 249, 0.97);
-    backdrop-filter: blur(6px);
-    border-radius: 0.5rem;
-  }
-}
-
-body.role-tech .day-header-sticky,
-body.compact.role-tech .day-header-sticky {
-  position: static;
+/* Technician: lighter day labels, no heavy box */
+body.role-tech .day-block {
   background: transparent;
   border: none;
-  padding: 0.35rem 0.15rem;
-  margin-bottom: 0.35rem;
+  box-shadow: none;
+  border-radius: 0;
+  margin-bottom: 0.75rem;
 }
-body.role-tech .day-section + .day-section {
-  margin-top: 0.5rem;
+body.role-tech .day-block + .day-block {
   border-top: 1px solid #e2e8f0;
-  padding-top: 0.25rem;
+  padding-top: 0.5rem;
+  margin-top: 0.25rem;
+}
+body.role-tech .day-block-head {
+  background: transparent;
+  border-bottom: none;
+  padding: 0.25rem 0.15rem 0.4rem;
+}
+body.role-tech .day-block-date {
+  font-size: 0.85rem;
+  color: #334155;
+}
+body.role-tech .day-block-body {
+  padding: 0;
 }
 
 @media (max-width: 1023px) {
@@ -124,6 +137,12 @@ body.role-tech .day-section + .day-section {
   }
   body.role-tech .job-card {
     padding: 0.75rem;
+  }
+  body.role-office .day-block-head {
+    padding: 0.65rem 0.85rem;
+  }
+  body.role-office .day-block-body {
+    padding: 0.65rem;
   }
 }
 
