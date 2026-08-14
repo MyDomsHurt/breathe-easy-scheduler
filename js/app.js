@@ -4,7 +4,7 @@ let allJobs = [];
 let filtered = [];
 let currentFilters = {
   month: 'all',
-  team: 'all',
+  team: 'Josh',
   type: 'all',
   date: 'all',
   range: 'today',
@@ -89,14 +89,26 @@ async function init() {
 }
 
 function buildTeamButtons() {
-  const container = document.getElementById('teamFilters');
-  TEAMS.forEach(t => {
-    const btn = document.createElement('button');
-    btn.dataset.team = t;
-    btn.className = 'team-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-100 hover:bg-slate-200';
-    btn.textContent = t;
-    container.appendChild(btn);
-  });
+  const sidebar = document.getElementById('teamFilters');
+  const techBar = document.getElementById('techTeamBar');
+
+  function fill(container, includeAll) {
+    if (!container) return;
+    container.innerHTML = '';
+    const names = includeAll ? ['all'].concat(TEAMS) : TEAMS.slice();
+    names.forEach(t => {
+      const btn = document.createElement('button');
+      btn.dataset.team = t;
+      const isActive = currentFilters.team === t;
+      btn.className = 'team-btn shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium ' +
+        (isActive ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200');
+      btn.textContent = t === 'all' ? 'All' : t;
+      container.appendChild(btn);
+    });
+  }
+
+  fill(sidebar, true);
+  fill(techBar, false);
 }
 
 function buildDateSelect() {
@@ -118,13 +130,26 @@ function bindEvents() {
       applyFilters();
     });
   });
-  document.getElementById('teamFilters').addEventListener('click', e => {
+
+  function onTeamClick(e) {
     const btn = e.target.closest('.team-btn');
     if (!btn) return;
-    setActive('.team-btn', btn);
     currentFilters.team = btn.dataset.team;
+    document.querySelectorAll('.team-btn').forEach(b => {
+      const on = b.dataset.team === currentFilters.team;
+      b.classList.toggle('bg-brand-600', on);
+      b.classList.toggle('text-white', on);
+      b.classList.toggle('bg-slate-100', !on);
+      b.classList.toggle('text-slate-700', !on);
+      b.classList.toggle('hover:bg-slate-200', !on);
+    });
     applyFilters();
-  });
+  }
+  const teamFiltersEl = document.getElementById('teamFilters');
+  const techTeamBar = document.getElementById('techTeamBar');
+  if (teamFiltersEl) teamFiltersEl.addEventListener('click', onTeamClick);
+  if (techTeamBar) techTeamBar.addEventListener('click', onTeamClick);
+
   document.querySelectorAll('.type-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       setActive('.type-btn', btn);
@@ -208,6 +233,7 @@ function setRole(role) {
     viewMode = 'date';
     currentFilters.range = 'today';
     currentFilters.date = 'all';
+    if (!currentFilters.team || currentFilters.team === 'all') currentFilters.team = 'Josh';
     document.querySelectorAll('.range-btn').forEach(b => {
       const active = b.dataset.range === 'today';
       b.classList.toggle('bg-brand-600', active);
@@ -229,6 +255,7 @@ function setRole(role) {
     if (dateSelect) dateSelect.value = 'all';
   }
   applyRoleUI();
+  buildTeamButtons();
   applyFilters();
 }
 
@@ -257,6 +284,12 @@ function applyRoleUI() {
     const prev = searchInput.previousElementSibling;
     if (prev && prev.tagName === 'LABEL') hideEls.push(prev);
   }
+  const teamFilters = document.getElementById('teamFilters');
+  if (teamFilters) {
+    hideEls.push(teamFilters);
+    const prev = teamFilters.previousElementSibling;
+    if (prev && prev.tagName === 'LABEL') hideEls.push(prev);
+  }
   document.querySelectorAll('.type-btn').forEach(btn => {
     hideEls.push(btn);
     const parent = btn.parentElement;
@@ -278,6 +311,8 @@ function applyRoleUI() {
     currentFilters.date = 'all';
     currentFilters.search = '';
     currentFilters.type = 'all';
+    if (!currentFilters.team || currentFilters.team === 'all') currentFilters.team = 'Josh';
+    buildTeamButtons();
   } else {
     officeBtn.className = 'role-btn px-3 py-1.5 bg-white text-brand-800';
     techBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
@@ -481,11 +516,38 @@ function jobCard(j) {
         '</div>' +
         '<p class="text-[12px] font-semibold text-slate-700 mt-0.5">' + esc(j.time || '—') + '</p>' +
         shortAddr +
-        '<div class="flex items-center justify-between gap-1 mt-auto pt-1.5">' +
+        '<div class="flex items-center gap-1.5 shrink-0 mt-auto pt-1.5">' +
           teamChip +
           units +
         '</div>' +
       '</div>' +
+    '</article>';
+  }
+
+  const showTeam = currentFilters.team === 'all';
+  const teamChip = showTeam
+    ? '<span class="text-[10px] font-medium px-1.5 py-0.5 rounded ' + (TEAM_COLORS[j.team_lead] || 'bg-slate-100') + '">' + esc(j.team_lead) + '</span>'
+    : '';
+
+  if (isTech) {
+    const addressBlock = j.address
+      ? '<div class="mt-2 px-3 py-2 rounded-lg border text-[13px] leading-snug font-medium" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + '">' +
+        esc(j.address) + (j.district ? ' <span class="opacity-70 text-[11px] font-semibold">' + esc(j.district) + '</span>' : '') + '</div>'
+      : '';
+    const notesBlock = j.notes
+      ? '<p class="text-[12px] text-slate-600 mt-2 leading-snug line-clamp-3 border-l-2 border-slate-200 pl-2">' + esc(j.notes) + '</p>'
+      : '';
+    return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3.5 cursor-pointer hover:shadow-md transition-shadow" data-id="' + esc(j.job_id) + '">' +
+      '<div class="flex items-start justify-between gap-2">' +
+        '<div class="min-w-0 flex-1">' +
+          '<p class="text-[15px] font-bold text-slate-800 leading-tight">' + esc(j.time || '—') + '</p>' +
+          '<p class="text-[14px] font-semibold text-slate-700 mt-0.5 truncate">' + esc(j.client_name) + '</p>' +
+        '</div>' +
+        '<div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div>' +
+      '</div>' +
+      addressBlock +
+      notesBlock +
+      '<div class="flex items-center gap-1.5 flex-wrap mt-2.5">' + teamChip + units + '</div>' +
     '</article>';
   }
 
@@ -496,7 +558,7 @@ function jobCard(j) {
   return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3 cursor-pointer hover:shadow-md transition-shadow" data-id="' + esc(j.job_id) + '">' +
     '<div class="flex items-start justify-between gap-2 mb-1"><div class="min-w-0"><p class="font-medium text-sm truncate">' + esc(j.client_name) + '</p>' +
     '<p class="text-xs text-slate-500 truncate">' + esc(j.time || '—') + '</p></div><div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div></div>' +
-    '<div class="flex items-center gap-1.5 flex-wrap mt-1.5"><span class="text-[10px] font-medium px-1.5 py-0.5 rounded ' + (TEAM_COLORS[j.team_lead] || 'bg-slate-100') + '">' + esc(j.team_lead) + '</span>' + units + '</div>' +
+    '<div class="flex items-center gap-1.5 flex-wrap mt-1.5">' + teamChip + units + '</div>' +
     addressBlock + (j.notes ? '<p class="text-xs text-slate-500 mt-1.5 line-clamp-2">' + esc(j.notes) + '</p>' : '') + '</article>';
 }
 
@@ -600,6 +662,7 @@ window.onAuthReady = function(role, user) {
     roleMode = 'tech';
     viewMode = 'date';
     localStorage.setItem('be-role', 'tech');
+    if (!currentFilters.team || currentFilters.team === 'all') currentFilters.team = 'Josh';
     const toggle = document.getElementById('roleToggle');
     if (toggle) toggle.classList.add('hidden');
     document.querySelectorAll('.view-btn').forEach(b => b.classList.add('hidden'));
