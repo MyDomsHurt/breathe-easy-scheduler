@@ -305,7 +305,8 @@ function getRangeBounds(range) {
 }
 
 function applyFilters() {
-  const bounds = getRangeBounds(currentFilters.range);
+  // Range filter (Today / This Week / Next Week) only applies in Technician mode
+  const bounds = roleMode === 'tech' ? getRangeBounds(currentFilters.range) : null;
 
   filtered = allJobs.filter(j => {
     if (currentFilters.week !== 'all' && j.week !== Number(currentFilters.week)) return false;
