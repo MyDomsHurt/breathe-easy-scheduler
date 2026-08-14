@@ -242,6 +242,17 @@ function applyRoleUI() {
     if (prev && prev.tagName === 'LABEL') hideEls.push(prev);
   }
 
+  // Hide Type (Clean / Return) on technician view
+  document.querySelectorAll('.type-btn').forEach(btn => {
+    hideEls.push(btn);
+    const parent = btn.parentElement;
+    if (parent && !hideEls.includes(parent)) {
+      hideEls.push(parent);
+      const prev = parent.previousElementSibling;
+      if (prev && prev.tagName === 'LABEL') hideEls.push(prev);
+    }
+  });
+
   document.body.classList.toggle('role-tech', isTech);
   document.body.classList.toggle('role-office', !isTech);
 
@@ -254,6 +265,7 @@ function applyRoleUI() {
     currentFilters.week = 'all';
     currentFilters.date = 'all';
     currentFilters.search = '';
+    currentFilters.type = 'all';
   } else {
     officeBtn.className = 'role-btn px-3 py-1.5 bg-white text-brand-800';
     techBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
