@@ -482,7 +482,7 @@ function renderByTeam(container) {
       (TEAM_COLORS[team] || 'bg-slate-100') + ' team-chip mr-1">' + team + '</span><span class="text-slate-400 font-normal text-sm">' +
       jobs.length + ' jobs' + (returns ? ' · ' + returns + ' returns' : '') + '</span></h3>' +
       (roleMode === 'office' ? '<span class="text-sm font-medium text-emerald-700">' + formatMoney(dayTotal) + '</span>' : '') +
-      '</div><div class="' + (compactMode && roleMode === 'tech' ? 'grid grid-cols-2 gap-1.5' : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3') + '">' + jobs.map(jobCard).join('') + '</div></section>';
+      '</div><div class="' + (compactMode && roleMode === 'tech' ? 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3' : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3').replace('grid gap-2 sm:grid-cols-2 xl:grid-cols-3', compactMode && roleMode === 'tech' ? 'grid grid-cols-2 gap-1.5' : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3') + '">' + jobs.map(jobCard).join('') + '</div></section>';
   }).join('');
   bindCardClicks();
 }
@@ -501,9 +501,10 @@ function jobCard(j) {
       ? '<span class="font-semibold text-emerald-700">' + formatMoney(j.amount) + '</span>'
       : '<span class="text-slate-400 text-xs">—</span>';
   }
+  // Units chip: show AC count on cleans; leave blank on returns (RETURN badge covers type)
   const units = j.acs
     ? '<span class="inline-flex items-center text-[11px] font-semibold bg-white/80 border border-slate-200 text-slate-800 px-1.5 py-0.5 rounded">' + esc(j.acs) + '</span>'
-    : '<span class="inline-flex items-center text-[11px] font-medium bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Return</span>';
+    : '';
   const dist = DISTRICT_COLORS[j.district] || DISTRICT_FALLBACK;
 
   if (compactMode && isTech) {
