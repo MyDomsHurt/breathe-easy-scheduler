@@ -12,6 +12,7 @@ let currentFilters = {
 };
 let viewMode = 'date';
 let roleMode = localStorage.getItem('be-role') || 'office';
+let compactMode = localStorage.getItem('be-compact') === '1';
 
 const TEAMS = ['Josh', 'Matthew', 'Tiago', 'Nick', 'Alun', 'Iggi'];
 const TEAM_COLORS = {
@@ -193,6 +194,30 @@ function bindEvents() {
       applyFilters();
     });
   });
+
+  const compactBtn = document.getElementById('compactToggle');
+  if (compactBtn) {
+    compactBtn.addEventListener('click', () => {
+      compactMode = !compactMode;
+      localStorage.setItem('be-compact', compactMode ? '1' : '0');
+      applyCompactUI();
+      render();
+    });
+    applyCompactUI();
+  }
+}
+
+function applyCompactUI() {
+  document.body.classList.toggle('compact', compactMode);
+  const btn = document.getElementById('compactToggle');
+  if (!btn) return;
+  if (compactMode) {
+    btn.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+    btn.classList.add('bg-brand-600', 'text-white', 'border-brand-600');
+  } else {
+    btn.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+    btn.classList.remove('bg-brand-600', 'text-white', 'border-brand-600');
+  }
 }
 
 function setRole(role) {
@@ -286,6 +311,7 @@ function applyRoleUI() {
     if (rangeBar) rangeBar.classList.add('hidden');
     hideEls.forEach(el => el.classList.remove('hidden'));
   }
+  applyCompactUI();
 }
 
 function setActive(selector, activeBtn) {
@@ -463,12 +489,25 @@ function jobCard(j) {
       : '<span class="text-slate-400 text-xs">—</span>';
   }
   const units = j.acs
-    ? '<span class="inline-flex items-center text-xs font-semibold bg-white/80 border border-slate-200 text-slate-800 px-2 py-0.5 rounded-md shadow-sm">' + esc(j.acs) + '</span>'
-    : '<span class="inline-flex items-center text-xs font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">No units (Return)</span>';
+    ? '<span class="inline-flex items-center text-[11px] font-semibold bg-white/80 border border-slate-200 text-slate-800 px-1.5 py-0.5 rounded">' + esc(j.acs) + '</span>'
+    : '<span class="inline-flex items-center text-[11px] font-medium bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Return</span>';
   const dist = DISTRICT_COLORS[j.district] || DISTRICT_FALLBACK;
+
+  if (compactMode && isTech) {
+    const shortAddr = j.address
+      ? '<div class="mt-1 px-2 py-1 rounded border text-[11px] leading-tight truncate" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + '">' +
+        esc(j.address) + (j.district ? ' · ' + esc(j.district) : '') + '</div>'
+      : '';
+    return '<article class="job-card compact-card bg-white border border-slate-200 rounded-lg px-2.5 py-2 cursor-pointer active:bg-slate-50" data-id="' + esc(j.job_id) + '">' +
+      '<div class="flex items-center justify-between gap-2"><div class="min-w-0 flex-1">' +
+      '<div class="flex items-center gap-1.5"><p class="font-semibold text-[13px] truncate">' + esc(j.client_name) + '</p>' + returnBadge + '</div>' +
+      '<p class="text-[11px] text-slate-500 truncate mt-0.5">' + esc(j.time || '—') + ' · ' + esc(j.team_lead) + '</p></div>' +
+      '<div class="flex items-center gap-1.5 shrink-0">' + units + rightBadge + '</div></div>' + shortAddr + '</article>';
+  }
+
   const addressBlock = j.address
-    ? '<div class="mt-2 px-2.5 py-1.5 rounded-lg border text-[12px] leading-snug" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + '"><span class="font-medium">' + esc(j.address) + '</span>' +
-      (j.district ? '<span class="ml-1.5 opacity-70 text-[10px] font-semibold tracking-wide">' + esc(j.district) + '</span>' : '') + '</div>'
+    ? '<div class="mt-2 px-2.5 py-1.5 rounded-lg border text-[12px] leading-snug" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + '"><span class="font-medium">' +
+      esc(j.address) + '</span>' + (j.district ? '<span class="ml-1.5 opacity-70 text-[10px] font-semibold tracking-wide">' + esc(j.district) + '</span>' : '') + '</div>'
     : '';
   return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3 cursor-pointer hover:shadow-md transition-shadow" data-id="' + esc(j.job_id) + '">' +
     '<div class="flex items-start justify-between gap-2 mb-1"><div class="min-w-0"><p class="font-medium text-sm truncate">' + esc(j.client_name) + '</p>' +
@@ -568,7 +607,7 @@ function formatMoney(n) {
 
 function esc(str) {
   if (str == null) return '';
-  return String(str).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 window.onAuthReady = function(role, user) {
