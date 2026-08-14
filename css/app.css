@@ -16,6 +16,9 @@
 }
 .return-badge {
   background: linear-gradient(135deg, #f59e0b, #d97706);
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-block;
 }
 .team-chip {
   font-size: 0.7rem;
@@ -97,9 +100,6 @@ body.role-tech #returnCount {
   overflow-x: hidden;
 }
 
-/* Day section headers
-   Office: sticky under main header
-   Tech: NOT sticky — stays with its day's cards (avoids fighting the range/team bar) */
 .day-header-sticky {
   position: sticky;
   top: var(--app-header-h, 57px);
