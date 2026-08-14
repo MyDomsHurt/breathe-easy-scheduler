@@ -476,7 +476,6 @@ function render() {
 function renderByDate(container) {
   const groups = groupBy(filtered, j => j.date);
   const dates = Object.keys(groups).sort();
-  const isTech = roleMode === 'tech';
   const gridCls = compactMode
     ? 'grid grid-cols-2 gap-1.5'
     : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3';
@@ -565,9 +564,20 @@ function jobCard(j) {
     ? '<span class="text-[10px] font-medium px-1.5 py-0.5 rounded ' + (TEAM_COLORS[j.team_lead] || 'bg-slate-100') + '">' + esc(j.team_lead) + '</span>'
     : '';
 
+  const tel = j.mobile ? String(j.mobile).replace(/[^\d+]/g, '') : '';
+  const callBtn = tel
+    ? '<a href="tel:' + esc(tel) + '" class="card-action card-action-call flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 active:bg-emerald-100">Call</a>'
+    : '';
+  const mapsBtn = j.address
+    ? '<a href="https://maps.google.com/?q=' + encodeURIComponent(cleanAddressForMaps(j.address)) + '" target="_blank" rel="noopener noreferrer" class="card-action card-action-maps flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-sky-50 border border-sky-200 text-sky-800 active:bg-sky-100">Maps</a>'
+    : '';
+  const actionsRow = (callBtn || mapsBtn)
+    ? '<div class="card-actions flex gap-2 mt-3" data-stop="1">' + callBtn + mapsBtn + '</div>'
+    : '';
+
   if (isTech) {
     const addressBlock = j.address
-      ? '<div class="mt-2 px-3 py-2 rounded-lg border text-[13px] leading-snug font-medium break-words" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + ';overflow-wrap:anywhere">' +
+      ? '<div class="mt-2.5 px-3 py-2 rounded-lg border text-[13px] leading-snug font-medium break-words" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + ';overflow-wrap:anywhere">' +
         esc(j.address) + (j.district ? ' <span class="opacity-70 text-[11px] font-semibold">' + esc(j.district) + '</span>' : '') + '</div>'
       : '';
     const notesBlock = j.notes
@@ -582,23 +592,34 @@ function jobCard(j) {
         '<div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div>' +
       '</div>' +
       addressBlock + notesBlock +
-      '<div class="flex items-center gap-1.5 flex-wrap mt-2.5">' + teamChip + units + '</div></article>';
+      '<div class="flex items-center gap-1.5 flex-wrap mt-2.5">' + teamChip + units + '</div>' +
+      actionsRow +
+    '</article>';
   }
 
   const addressBlock = j.address
     ? '<div class="mt-2 px-2.5 py-1.5 rounded-lg border text-[12px] leading-snug break-words" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + ';overflow-wrap:anywhere"><span class="font-medium">' +
       esc(j.address) + '</span>' + (j.district ? '<span class="ml-1.5 opacity-70 text-[10px] font-semibold tracking-wide">' + esc(j.district) + '</span>' : '') + '</div>'
     : '';
-  return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
-    '<div class="flex items-start justify-between gap-2 mb-1"><div class="min-w-0"><p class="font-medium text-sm truncate">' + esc(j.client_name) + '</p>' +
-    '<p class="text-xs text-slate-500 truncate">' + esc(displayTime(j)) + '</p></div><div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div></div>' +
-    '<div class="flex items-center gap-1.5 flex-wrap mt-1.5">' + teamChip + units + '</div>' +
-    addressBlock + (j.notes ? '<p class="text-xs text-slate-500 mt-1.5 line-clamp-2 break-words" style="overflow-wrap:anywhere">' + esc(j.notes) + '</p>' : '') + '</article>';
+  return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3.5 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
+    '<div class="flex items-start justify-between gap-2">' +
+      '<div class="min-w-0 flex-1">' +
+        '<p class="font-semibold text-[14px] text-slate-800 truncate">' + esc(j.client_name) + '</p>' +
+        '<p class="text-[13px] font-medium text-slate-600 mt-0.5">' + esc(displayTime(j)) + '</p>' +
+      '</div>' +
+      '<div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div>' +
+    '</div>' +
+    addressBlock +
+    (j.notes ? '<p class="text-xs text-slate-500 mt-2 line-clamp-2 break-words" style="overflow-wrap:anywhere">' + esc(j.notes) + '</p>' : '') +
+    '<div class="flex items-center gap-1.5 flex-wrap mt-2.5">' + teamChip + units + '</div>' +
+    actionsRow +
+  '</article>';
 }
 
 function bindCardClicks() {
   document.querySelectorAll('.job-card').forEach(card => {
-    card.addEventListener('click', () => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.card-actions') || e.target.closest('a.card-action')) return;
       const job = filtered.find(j => j.job_id === card.dataset.id) || allJobs.find(j => j.job_id === card.dataset.id);
       if (job) openModal(job);
     });
