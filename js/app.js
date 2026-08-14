@@ -36,7 +36,6 @@ const DISTRICT_COLORS = {
 };
 const DISTRICT_FALLBACK = { bg: '#F3F4F6', border: '#D1D5DB', text: '#374151' };
 
-// Parse "9.00am" / "01.00pm" / "9:30 AM" → minutes since midnight
 function timeToMinutes(t) {
   if (!t) return 9999;
   const s = String(t).toLowerCase().replace(/\s+/g, '');
@@ -235,6 +234,14 @@ function applyRoleUI() {
     if (prev && prev.tagName === 'LABEL') hideEls.push(prev);
   }
 
+  // Hide Search on technician view
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    hideEls.push(searchInput);
+    const prev = searchInput.previousElementSibling;
+    if (prev && prev.tagName === 'LABEL') hideEls.push(prev);
+  }
+
   document.body.classList.toggle('role-tech', isTech);
   document.body.classList.toggle('role-office', !isTech);
 
@@ -246,6 +253,7 @@ function applyRoleUI() {
     hideEls.forEach(el => el.classList.add('hidden'));
     currentFilters.week = 'all';
     currentFilters.date = 'all';
+    currentFilters.search = '';
   } else {
     officeBtn.className = 'role-btn px-3 py-1.5 bg-white text-brand-800';
     techBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
@@ -324,7 +332,6 @@ function applyFilters() {
     return true;
   });
 
-  // Real chronological order (date, then clock time with am/pm)
   filtered.sort((a, b) => {
     if (a.date !== b.date) return a.date.localeCompare(b.date);
     return timeToMinutes(a.time) - timeToMinutes(b.time);
