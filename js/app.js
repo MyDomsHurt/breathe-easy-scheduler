@@ -364,14 +364,42 @@ function bindCardClicks() {
   });
 }
 
+
+// Clean address for Google Maps – remove flat/floor/unit/tower numbers
+// so the pin lands on the building rather than failing on unit detail
+function cleanAddressForMaps(raw) {
+  if (!raw) return '';
+  let a = String(raw).trim();
+
+  // Remove common unit / floor / room prefixes (HK style)
+  a = a
+    // Flat / Unit / Room / Apt + letter/number
+    .replace(/^(Flat|Unit|Room|Apt|Apartment|Suite)\s*[A-Z0-9\-\/]+[,\s]*/i, '')
+    // Floor patterns: 15/F, 15F, 15th Floor, Floor 15, etc.
+    .replace(/\b\d{1,2}\s*(\/F|F|th\s*Floor|st\s*Floor|nd\s*Floor|rd\s*Floor|Floor)\b[,\s]*/gi, '')
+    .replace(/\b(Floor|Level)\s*\d{1,2}\b[,\s]*/gi, '')
+    // Tower / Block + number/letter at the start of remaining string
+    .replace(/^(Tower|Block|Blk)\s*[A-Z0-9\-]+[,\s]*/i, '')
+    // Leading numbers that look like unit numbers (e.g. "20C, Tower 3")
+    .replace(/^\d{1,3}[A-Z]?\s*[,\-]\s*/i, '')
+    // Clean up leftover punctuation and spaces
+    .replace(/^[,\s\-]+/, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+  // If we stripped too much, fall back to original
+  if (a.length < 8) return raw.trim();
+  return a;
+}
+
 function openModal(j) {
   document.getElementById('modalTitle').textContent = j.client_name;
   document.getElementById('modalSub').textContent =
     `${formatDate(j.date)} · ${j.time || '—'} · ${j.team_lead}`;
 
-  // Reliable Google Maps link (works better on mobile – opens native app when available)
+  // Reliable Google Maps link – cleaned address (no flat/floor numbers)
   const mapsUrl = j.address
-    ? `https://maps.google.com/?q=${encodeURIComponent(j.address)}`
+    ? `https://maps.google.com/?q=${encodeURIComponent(cleanAddressForMaps(j.address))}`
     : null;
   const mapsLink = mapsUrl
     ? `<a href="${mapsUrl}" target="_blank" rel="noopener noreferrer"
