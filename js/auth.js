@@ -18,10 +18,10 @@
   const USERS = {
     // Office
     "jefflamb1992@gmail.com": { role: "office" },
-    "joshua@breathe-easyhk.com": { role: "office" },
-    "iamruby112@gmail.com": { role: "office" },
 
     // Technicians
+    "joshua@breathe-easyhk.com": { role: "tech" },
+    "iamruby112@gmail.com": { role: "tech" },
     "matthewgross2001@gmail.com": { role: "tech" },
     "tiagogiri334@gmail.com": { role: "tech" },
     "iggi.king@gmail.com": { role: "tech" },
