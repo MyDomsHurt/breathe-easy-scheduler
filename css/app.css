@@ -97,22 +97,33 @@ body.role-tech #returnCount {
   overflow-x: hidden;
 }
 
-/* Day section headers — stick below header + tech range/team bar */
+/* Day section headers
+   Office: sticky under main header
+   Tech: NOT sticky — stays with its day's cards (avoids fighting the range/team bar) */
 .day-header-sticky {
   position: sticky;
-  top: var(--day-sticky-top, 57px);
+  top: var(--app-header-h, 57px);
   z-index: 20;
-  background: rgba(248, 250, 252, 0.95);
+  background: rgba(248, 250, 252, 0.97);
   backdrop-filter: blur(6px);
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
 }
-body.role-tech .day-header-sticky {
-  top: var(--day-sticky-top, 140px);
-}
+body.role-tech .day-header-sticky,
 body.compact.role-tech .day-header-sticky {
-  padding-top: 0.2rem;
-  padding-bottom: 0.2rem;
+  position: static;
+  top: auto;
+  backdrop-filter: none;
+  background: transparent;
+  padding-top: 0.5rem;
+  padding-bottom: 0.25rem;
   margin-bottom: 0.35rem;
 }
 .day-section {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+}
+body.role-tech .day-section + .day-section {
+  margin-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.25rem;
 }
