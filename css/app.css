@@ -60,7 +60,6 @@ body.compact.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
   padding-right: 0.5rem !important;
 }
 
-/* Header height driven by JS so range bar never slips under header */
 #techRangeBar {
   top: var(--app-header-h, 57px) !important;
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
@@ -70,7 +69,6 @@ body.compact.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
   white-space: nowrap;
 }
 
-/* Tech: hide empty Filters sidebar entirely */
 body.role-tech aside {
   display: none !important;
 }
@@ -82,11 +80,29 @@ body.role-tech main {
   max-width: 100% !important;
 }
 
-/* Tech header: keep single row so sticky offset is stable */
 body.role-tech header .max-w-7xl {
   flex-wrap: nowrap;
 }
 body.role-tech #jobCount,
 body.role-tech #returnCount {
   display: none !important;
+}
+
+/* Prevent long notes/URLs from blowing out card width */
+.job-card {
+  max-width: 100%;
+  overflow: hidden;
+  min-width: 0;
+}
+.job-card p,
+.job-card div {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+#jobsContainer,
+#jobsContainer > section,
+#jobsContainer .grid {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
 }
