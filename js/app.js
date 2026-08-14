@@ -10,6 +10,7 @@ let currentFilters = {
   search: ''
 };
 let viewMode = 'date'; // 'date' | 'team'
+let roleMode = localStorage.getItem('be-role') || 'office'; // 'office' | 'tech'
 
 const TEAMS = ['Josh', 'Matthew', 'Tiago', 'Nick', 'Alun', 'Iggi'];
 const TEAM_COLORS = {
@@ -162,6 +163,35 @@ function bindEvents() {
   document.getElementById('modalClose').addEventListener('click', closeModal);
   document.getElementById('modalBackdrop').addEventListener('click', closeModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // Role toggle
+  document.getElementById('roleOffice').addEventListener('click', () => setRole('office'));
+  document.getElementById('roleTech').addEventListener('click', () => setRole('tech'));
+  applyRoleUI();
+}
+
+function setRole(role) {
+  roleMode = role;
+  localStorage.setItem('be-role', role);
+  applyRoleUI();
+  applyFilters(); // re-render cards with correct financial visibility
+}
+
+function applyRoleUI() {
+  const isTech = roleMode === 'tech';
+  const officeBtn = document.getElementById('roleOffice');
+  const techBtn = document.getElementById('roleTech');
+  const revenueEl = document.getElementById('revenueTotal');
+
+  if (isTech) {
+    officeBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
+    techBtn.className = 'role-btn px-3 py-1.5 bg-white text-brand-800';
+    revenueEl.classList.add('hidden');
+  } else {
+    officeBtn.className = 'role-btn px-3 py-1.5 bg-white text-brand-800';
+    techBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
+    revenueEl.classList.remove('hidden');
+  }
 }
 
 function setActive(selector, activeBtn) {
@@ -220,12 +250,16 @@ function updateStatsPanel() {
   });
 
   const panel = document.getElementById('statsPanel');
+  const isTech = roleMode === 'tech';
   panel.innerHTML = TEAMS.map(t => {
     const s = byTeam[t];
     if (s.jobs === 0) return '';
+    const right = isTech
+      ? `${s.jobs} job${s.jobs !== 1 ? 's' : ''}`
+      : `${s.jobs} · ${formatMoney(s.amount)}`;
     return `<div class="flex justify-between items-center">
       <span class="font-medium">${t}</span>
-      <span class="text-slate-500">${s.jobs} · ${formatMoney(s.amount)}</span>
+      <span class="text-slate-500">${right}</span>
     </div>`;
   }).filter(Boolean).join('') || '<p class="text-slate-400">No data</p>';
 }
@@ -267,7 +301,7 @@ function renderByDate(container) {
             <span class="text-slate-400 font-normal text-sm ml-2">${jobs.length} jobs</span>
             ${returns ? `<span class="ml-1 text-amber-600 text-sm">· ${returns} return${returns>1?'s':''}</span>` : ''}
           </h3>
-          <span class="text-sm font-medium text-emerald-700">${formatMoney(dayTotal)}</span>
+          ${roleMode === 'office' ? `<span class="text-sm font-medium text-emerald-700">${formatMoney(dayTotal)}</span>` : ''}
         </div>
         <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           ${jobs.map(jobCard).join('')}
@@ -295,7 +329,7 @@ function renderByTeam(container) {
             <span class="text-slate-400 font-normal text-sm">${jobs.length} jobs
             ${returns ? `· ${returns} returns` : ''}</span>
           </h3>
-          <span class="text-sm font-medium text-emerald-700">${formatMoney(dayTotal)}</span>
+          ${roleMode === 'office' ? `<span class="text-sm font-medium text-emerald-700">${formatMoney(dayTotal)}</span>` : ''}
         </div>
         <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           ${jobs.map(jobCard).join('')}
@@ -310,9 +344,18 @@ function jobCard(j) {
   const returnBadge = j.is_return
     ? `<span class="return-badge text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">RETURN</span>`
     : '';
-  const amount = j.amount != null
-    ? `<span class="font-semibold text-emerald-700">${formatMoney(j.amount)}</span>`
-    : `<span class="text-slate-400 text-xs">—</span>`;
+  const isTech = roleMode === 'tech';
+  const isPaid = !!(j.receipt && String(j.receipt).trim());
+  let rightBadge;
+  if (isTech) {
+    rightBadge = isPaid
+      ? `<span class="text-[10px] font-bold tracking-wide px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">PAID</span>`
+      : `<span class="text-[10px] font-bold tracking-wide px-1.5 py-0.5 rounded bg-rose-100 text-rose-800">UNPAID</span>`;
+  } else {
+    rightBadge = j.amount != null
+      ? `<span class="font-semibold text-emerald-700">${formatMoney(j.amount)}</span>`
+      : `<span class="text-slate-400 text-xs">—</span>`;
+  }
 
   // Units (ACs) — always show clearly
   const units = j.acs
@@ -339,7 +382,7 @@ function jobCard(j) {
         </div>
         <div class="flex flex-col items-end gap-1 shrink-0">
           ${returnBadge}
-          ${amount}
+          ${rightBadge}
         </div>
       </div>
 
@@ -418,7 +461,23 @@ function openModal(j) {
     ? `<div class="text-slate-800 break-words">${esc(j.address)}</div>${mapsLink}`
     : '—';
 
-  const rows = [
+  const isTech = roleMode === 'tech';
+  const isPaid = !!(j.receipt && String(j.receipt).trim());
+  const paidStatus = isPaid
+    ? '<span class="inline-flex items-center gap-1.5 text-emerald-700 font-semibold"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>PAID</span>'
+    : '<span class="inline-flex items-center gap-1.5 text-rose-700 font-semibold"><span class="w-2 h-2 rounded-full bg-rose-500"></span>UNPAID</span>';
+
+  const rows = isTech ? [
+    ['Type', j.is_return ? '<span class="text-amber-600 font-semibold">Return</span>' : 'Full clean'],
+    ['Team', `${j.team_lead}${j.team_members ? ` (${j.team_members})` : ''}`],
+    ['ACs / Units', j.acs || '— (empty → treated as return)'],
+    ['Payment Status', paidStatus],
+    ['Mobile', j.mobile || '—'],
+    ['Address', addressHtml],
+    ['District', j.district || '—'],
+    ['Notes', j.notes || '—'],
+    ['Job ID', j.job_id]
+  ] : [
     ['Type', j.is_return ? '<span class="text-amber-600 font-semibold">Return</span>' : 'Full clean'],
     ['Team', `${j.team_lead}${j.team_members ? ` (${j.team_members})` : ''}`],
     ['ACs / Units', j.acs || '— (empty → treated as return)'],
