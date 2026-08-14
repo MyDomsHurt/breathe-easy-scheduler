@@ -129,3 +129,12 @@ body.role-tech .day-section + .day-section {
   border-top: 1px solid #e2e8f0;
   padding-top: 0.25rem;
 }
+
+/* Full-card Call / Maps actions */
+.card-actions a.card-action {
+  text-decoration: none;
+  min-height: 40px;
+}
+.card-actions a.card-action:active {
+  transform: scale(0.98);
+}
