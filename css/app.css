@@ -13,6 +13,9 @@
   font-size: 0.7rem;
   letter-spacing: 0.02em;
 }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 #modalBody::-webkit-scrollbar { width: 6px; }
 #modalBody::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
@@ -29,20 +32,40 @@ body.role-tech #monthFilters {
   display: none !important;
 }
 
-/* Mobile tech: minimal filter chrome so jobs fill the screen */
+/* ---- Mobile tech: one tight control stack ---- */
 @media (max-width: 1023px) {
-  /* Collapse the Filters card to a thin team-only strip */
-  body.role-tech aside > .bg-white.rounded-xl:first-of-type {
-    padding: 0.4rem 0.5rem !important;
-    border-radius: 0.75rem;
+  /* Range bar: slightly tighter */
+  body.role-tech #techRangeBar > div {
+    padding-top: 0.4rem !important;
+    padding-bottom: 0.35rem !important;
   }
 
-  /* Hide the "Filters" heading */
+  body.role-tech #techRangeBar .range-btn {
+    padding: 0.55rem 0.5rem !important;
+    font-size: 0.8125rem !important;
+    border-radius: 0.65rem !important;
+  }
+
+  /* Flatten filters card into a plain strip under the range bar */
+  body.role-tech aside {
+    margin: 0 !important;
+  }
+
+  body.role-tech aside > .bg-white.rounded-xl:first-of-type {
+    background: #fff !important;
+    border: none !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0.35rem 0.6rem 0.45rem !important;
+    margin: 0 -0.6rem !important; /* bleed to screen edges with page padding */
+  }
+
   body.role-tech aside > .bg-white.rounded-xl:first-of-type > h2 {
     display: none !important;
   }
 
-  /* Hide Search, Month, Type, Date (labels + controls) */
+  /* Hide everything except team pills */
   body.role-tech #searchInput,
   body.role-tech #monthFilters,
   body.role-tech #dateSelect,
@@ -50,30 +73,44 @@ body.role-tech #monthFilters {
     display: none !important;
   }
 
-  /* Team pills: very compact */
+  /* Team row: same visual language as range buttons, single horizontal scroll */
   body.role-tech #teamFilters {
     display: flex !important;
-    flex-wrap: wrap;
-    gap: 0.25rem !important;
+    flex-wrap: nowrap !important;
+    gap: 0.35rem !important;
     margin: 0 !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  body.role-tech #teamFilters::-webkit-scrollbar {
+    display: none;
   }
 
   body.role-tech #teamFilters .team-btn {
-    padding: 0.25rem 0.55rem !important;
-    font-size: 0.7rem !important;
+    flex: 0 0 auto;
+    padding: 0.5rem 0.85rem !important;
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
     line-height: 1.2 !important;
-    border-radius: 0.4rem !important;
+    border-radius: 0.65rem !important;
+    white-space: nowrap;
   }
 
-  /* Page padding reduced */
+  /* Page padding tightened */
   body.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
-    padding-top: 0.35rem !important;
+    padding-top: 0.25rem !important;
     padding-bottom: 0.75rem !important;
     padding-left: 0.6rem !important;
     padding-right: 0.6rem !important;
+    gap: 0.35rem !important;
   }
 
-  /* Hide By Date / By Team switch on tech */
+  body.role-tech .grid.grid-cols-1.lg\:grid-cols-12 {
+    gap: 0.35rem !important;
+  }
+
+  /* Hide By Date / By Team switch */
   body.role-tech main > .flex.items-center.justify-between.mb-4 {
     display: none !important;
   }
@@ -87,9 +124,9 @@ body.role-tech #monthFilters {
     margin-top: 0.35rem !important;
   }
 
-  /* Day sticky header sits under range bar */
+  /* Sticky day header under the two control rows */
   body.role-tech section > .sticky {
-    top: 100px;
+    top: 118px;
     padding-top: 0.15rem !important;
     padding-bottom: 0.15rem !important;
   }
@@ -98,12 +135,15 @@ body.role-tech #monthFilters {
     font-size: 0.9rem;
   }
 
-  /* Tighter gap between job cards */
   body.role-tech .grid.gap-2 {
     gap: 0.4rem !important;
   }
 
   body.role-tech section {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.65rem;
+  }
+
+  body.role-tech #jobsContainer {
+    margin-top: 0.15rem;
   }
 }
