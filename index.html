@@ -27,6 +27,40 @@
   <link rel="stylesheet" href="css/app.css" />
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
+
+  <!-- ==================== LOGIN SCREEN ==================== -->
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-sm">
+      <div class="text-center mb-8">
+        <div class="inline-flex w-14 h-14 rounded-2xl bg-brand-800 text-white items-center justify-center font-bold text-xl mb-3">BE</div>
+        <h1 class="text-xl font-semibold text-slate-800">Breathe-Easy</h1>
+        <p class="text-sm text-slate-500 mt-1">Sign in to view the schedule</p>
+      </div>
+
+      <form id="loginForm" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-600 mb-1">Email</label>
+          <input id="loginEmail" type="email" autocomplete="username" required
+                 class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                 placeholder="you@company.com" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-600 mb-1">Password</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" required
+                 class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                 placeholder="••••••••" />
+        </div>
+        <div id="loginError" class="hidden text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2"></div>
+        <button id="loginBtn" type="submit"
+                class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg py-2.5 text-sm transition">
+          Sign in
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== APP (hidden until authenticated) ==================== -->
+  <div id="appRoot" class="hidden">
   <!-- Header -->
   <header class="bg-brand-800 text-white shadow-lg sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
@@ -37,15 +71,17 @@
           <p class="text-xs text-brand-100">August 2026 Scheduler</p>
         </div>
       </div>
-      <div class="flex items-center gap-3 text-sm">
-        <!-- Role toggle -->
-        <div class="flex rounded-lg overflow-hidden border border-white/25 text-xs font-medium">
+      <div class="flex items-center gap-3 text-sm flex-wrap justify-end">
+        <!-- Role toggle (Office users only – hidden for technicians) -->
+        <div id="roleToggle" class="flex rounded-lg overflow-hidden border border-white/25 text-xs font-medium">
           <button id="roleOffice" class="role-btn px-3 py-1.5 bg-white text-brand-800">Office</button>
           <button id="roleTech" class="role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20">Technician</button>
         </div>
         <span id="jobCount" class="bg-white/15 px-2.5 py-1 rounded-full">— jobs</span>
         <span id="returnCount" class="bg-amber-500/90 text-white px-2.5 py-1 rounded-full hidden">0 returns</span>
         <span id="revenueTotal" class="bg-emerald-500/90 text-white px-2.5 py-1 rounded-full">$0</span>
+        <span id="userChip" class="hidden bg-white/15 px-2.5 py-1 rounded-full text-xs max-w-[140px] truncate"></span>
+        <button id="logoutBtn" class="text-xs bg-white/10 hover:bg-white/20 px-2.5 py-1 rounded-full">Sign out</button>
       </div>
     </div>
   </header>
@@ -144,6 +180,10 @@
     </div>
   </div>
 
+  </div><!-- /appRoot -->
+
+  <script src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
