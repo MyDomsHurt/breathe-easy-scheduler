@@ -91,7 +91,6 @@ async function init() {
 function buildTeamButtons() {
   const sidebar = document.getElementById('teamFilters');
   const techBar = document.getElementById('techTeamBar');
-
   function fill(container, includeAll) {
     if (!container) return;
     container.innerHTML = '';
@@ -106,7 +105,6 @@ function buildTeamButtons() {
       container.appendChild(btn);
     });
   }
-
   fill(sidebar, true);
   fill(techBar, false);
 }
@@ -130,7 +128,6 @@ function bindEvents() {
       applyFilters();
     });
   });
-
   function onTeamClick(e) {
     const btn = e.target.closest('.team-btn');
     if (!btn) return;
@@ -149,7 +146,6 @@ function bindEvents() {
   const techTeamBar = document.getElementById('techTeamBar');
   if (teamFiltersEl) teamFiltersEl.addEventListener('click', onTeamClick);
   if (techTeamBar) techTeamBar.addEventListener('click', onTeamClick);
-
   document.querySelectorAll('.type-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       setActive('.type-btn', btn);
@@ -210,6 +206,15 @@ function bindEvents() {
     });
     applyCompactUI();
   }
+  window.addEventListener('resize', syncHeaderHeight);
+  syncHeaderHeight();
+}
+
+function syncHeaderHeight() {
+  const header = document.querySelector('header');
+  if (!header) return;
+  const h = Math.ceil(header.getBoundingClientRect().height);
+  document.documentElement.style.setProperty('--app-header-h', h + 'px');
 }
 
 function applyCompactUI() {
@@ -321,6 +326,7 @@ function applyRoleUI() {
     hideEls.forEach(el => el.classList.remove('hidden'));
   }
   applyCompactUI();
+  syncHeaderHeight();
 }
 
 function setActive(selector, activeBtn) {
@@ -443,6 +449,7 @@ function render() {
     document.getElementById('viewTitle').textContent = 'Jobs by Team';
     renderByTeam(container);
   }
+  syncHeaderHeight();
 }
 
 function renderByDate(container) {
@@ -516,12 +523,8 @@ function jobCard(j) {
         '</div>' +
         '<p class="text-[12px] font-semibold text-slate-700 mt-0.5">' + esc(j.time || '—') + '</p>' +
         shortAddr +
-        '<div class="flex items-center gap-1.5 shrink-0 mt-auto pt-1.5">' +
-          teamChip +
-          units +
-        '</div>' +
-      '</div>' +
-    '</article>';
+        '<div class="flex items-center gap-1.5 shrink-0 mt-auto pt-1.5">' + teamChip + units + '</div>' +
+      '</div></article>';
   }
 
   const showTeam = currentFilters.team === 'all';
@@ -545,10 +548,8 @@ function jobCard(j) {
         '</div>' +
         '<div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div>' +
       '</div>' +
-      addressBlock +
-      notesBlock +
-      '<div class="flex items-center gap-1.5 flex-wrap mt-2.5">' + teamChip + units + '</div>' +
-    '</article>';
+      addressBlock + notesBlock +
+      '<div class="flex items-center gap-1.5 flex-wrap mt-2.5">' + teamChip + units + '</div></article>';
   }
 
   const addressBlock = j.address
