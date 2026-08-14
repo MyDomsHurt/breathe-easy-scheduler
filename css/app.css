@@ -13,137 +13,86 @@
   font-size: 0.7rem;
   letter-spacing: 0.02em;
 }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
 #modalBody::-webkit-scrollbar { width: 6px; }
 #modalBody::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-/* ========== Technician mode ========== */
-
-/* Hide Snapshot + footer note always for tech */
-body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
-body.role-tech aside > .text-xs.text-slate-400 {
-  display: none !important;
-}
-
-/* Always hide Month filters for technicians (Office only) */
-body.role-tech #monthFilters {
-  display: none !important;
-}
-
-/* ---- Mobile tech: one tight control stack ---- */
+/* Technician: Team only — Search/Snapshot hidden via JS + CSS */
 @media (max-width: 1023px) {
-  /* Range bar: slightly tighter */
-  body.role-tech #techRangeBar > div {
-    padding-top: 0.4rem !important;
-    padding-bottom: 0.35rem !important;
-  }
-
-  body.role-tech #techRangeBar .range-btn {
-    padding: 0.55rem 0.5rem !important;
-    font-size: 0.8125rem !important;
-    border-radius: 0.65rem !important;
-  }
-
-  /* Flatten filters card into a plain strip under the range bar */
-  body.role-tech aside {
-    margin: 0 !important;
+  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
+  body.role-tech aside > .text-xs.text-slate-400 {
+    display: none !important;
   }
 
   body.role-tech aside > .bg-white.rounded-xl:first-of-type {
-    background: #fff !important;
-    border: none !important;
-    border-bottom: 1px solid #e2e8f0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    padding: 0.35rem 0.6rem 0.45rem !important;
-    margin: 0 -0.6rem !important; /* bleed to screen edges with page padding */
+    padding: 0.75rem !important;
   }
 
-  body.role-tech aside > .bg-white.rounded-xl:first-of-type > h2 {
-    display: none !important;
-  }
-
-  /* Hide everything except team pills */
-  body.role-tech #searchInput,
-  body.role-tech #monthFilters,
-  body.role-tech #dateSelect,
-  body.role-tech label {
-    display: none !important;
-  }
-
-  /* Team row: same visual language as range buttons, single horizontal scroll */
-  body.role-tech #teamFilters {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    gap: 0.35rem !important;
-    margin: 0 !important;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  body.role-tech #teamFilters::-webkit-scrollbar {
-    display: none;
-  }
-
-  body.role-tech #teamFilters .team-btn {
-    flex: 0 0 auto;
-    padding: 0.5rem 0.85rem !important;
-    font-size: 0.8125rem !important;
-    font-weight: 600 !important;
-    line-height: 1.2 !important;
-    border-radius: 0.65rem !important;
-    white-space: nowrap;
-  }
-
-  /* Page padding tightened */
   body.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
-    padding-top: 0.25rem !important;
-    padding-bottom: 0.75rem !important;
-    padding-left: 0.6rem !important;
-    padding-right: 0.6rem !important;
-    gap: 0.35rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 1rem !important;
   }
 
-  body.role-tech .grid.grid-cols-1.lg\:grid-cols-12 {
-    gap: 0.35rem !important;
-  }
-
-  /* Hide By Date / By Team switch */
   body.role-tech main > .flex.items-center.justify-between.mb-4 {
+    margin-bottom: 0.5rem !important;
+  }
+
+  body.role-tech #viewTitle {
+    font-size: 1rem;
+  }
+
+  body.role-tech .job-card {
+    padding: 0.75rem;
+  }
+
+  body.role-tech section > .sticky {
+    top: 108px;
+  }
+}
+
+@media (min-width: 1024px) {
+  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
+  body.role-tech aside > .text-xs.text-slate-400 {
     display: none !important;
   }
+}
 
-  /* Tighter job cards */
-  body.role-tech .job-card {
-    padding: 0.55rem 0.65rem !important;
-  }
+/* ---- Compact mode (tech / mobile density) ---- */
+body.compact.role-tech .job-card.compact-card {
+  padding: 0.4rem 0.6rem !important;
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+body.compact.role-tech .job-card.compact-card:hover,
+body.compact.role-tech .job-card.compact-card:active {
+  transform: none;
+  box-shadow: none;
+  background: #f8fafc;
+}
 
-  body.role-tech .job-card .mt-2 {
-    margin-top: 0.35rem !important;
-  }
+body.compact.role-tech #jobsContainer {
+  gap: 0.35rem !important;
+}
+body.compact.role-tech #jobsContainer > section {
+  margin-bottom: 0.6rem !important;
+}
+body.compact.role-tech #jobsContainer .grid {
+  gap: 0.35rem !important;
+}
 
-  /* Sticky day header under the two control rows */
-  body.role-tech section > .sticky {
-    top: 118px;
-    padding-top: 0.15rem !important;
-    padding-bottom: 0.15rem !important;
-  }
+body.compact.role-tech section > .sticky {
+  top: 100px;
+  padding-top: 0.15rem !important;
+  padding-bottom: 0.15rem !important;
+  margin-bottom: 0.25rem !important;
+}
+body.compact.role-tech #viewTitle,
+body.compact.role-tech main > .flex.items-center.justify-between {
+  display: none !important; /* extra vertical space */
+}
 
-  body.role-tech section > .sticky h3 {
-    font-size: 0.9rem;
-  }
-
-  body.role-tech .grid.gap-2 {
-    gap: 0.4rem !important;
-  }
-
-  body.role-tech section {
-    margin-bottom: 0.65rem;
-  }
-
-  body.role-tech #jobsContainer {
-    margin-top: 0.15rem;
-  }
+body.compact.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.75rem !important;
+  padding-left: 0.6rem !important;
+  padding-right: 0.6rem !important;
 }
