@@ -4,7 +4,7 @@ let allJobs = [];
 let filtered = [];
 let currentFilters = {
   month: 'all',
-  team: 'Josh',
+  team: 'all',
   type: 'all',
   date: 'all',
   range: 'today',
@@ -153,13 +153,28 @@ function buildTeamButtons() {
 function buildDateSelect() {
   const select = document.getElementById('dateSelect');
   if (!select) return;
-  const dates = [...new Set(allJobs.map(j => j.date))].sort();
+  const prev = select.value || 'all';
+  select.innerHTML = '';
+  const allOpt = document.createElement('option');
+  allOpt.value = 'all';
+  allOpt.textContent = 'All dates';
+  select.appendChild(allOpt);
+  let dates = [...new Set(allJobs.map(j => j.date))].sort();
+  if (currentFilters.month && currentFilters.month !== 'all') {
+    const m = Number(currentFilters.month);
+    dates = dates.filter(d => Number(String(d).slice(5, 7)) === m);
+  }
   dates.forEach(d => {
     const opt = document.createElement('option');
     opt.value = d;
     opt.textContent = formatDate(d);
     select.appendChild(opt);
   });
+  if ([...select.options].some(o => o.value === prev)) select.value = prev;
+  else {
+    select.value = 'all';
+    currentFilters.date = 'all';
+  }
 }
 
 function bindEvents() {
@@ -167,6 +182,8 @@ function bindEvents() {
     btn.addEventListener('click', () => {
       setActive('.month-btn', btn);
       currentFilters.month = btn.dataset.month;
+      currentFilters.date = 'all';
+      buildDateSelect();
       applyFilters();
     });
   });
@@ -295,6 +312,7 @@ function setRole(role) {
   } else {
     currentFilters.month = 'all';
     currentFilters.date = 'all';
+    currentFilters.team = 'all';
     document.querySelectorAll('.month-btn').forEach(b => {
       const active = b.dataset.month === 'all';
       b.classList.toggle('bg-brand-600', active);
@@ -519,7 +537,7 @@ function renderByDate(container) {
     const dayTotal = jobs.reduce((s, j) => s + (j.amount || 0), 0);
     const returns = jobs.filter(j => j.is_return).length;
     return '<section class="day-section">' +
-      '<div class="day-header-sticky flex items-center justify-between mb-2 bg-slate-50/95 backdrop-blur py-1.5 z-10">' +
+      '<div class="day-header-sticky flex items-center justify-between">' +
         '<h3 class="font-semibold text-brand-800">' +
           formatDate(date) + '<span class="text-slate-400 font-normal text-sm ml-2">' + jobs.length + ' jobs</span>' +
           (returns ? '<span class="ml-1 text-amber-600 text-sm">· ' + returns + ' return' + (returns > 1 ? 's' : '') + '</span>' : '') +
@@ -735,6 +753,7 @@ window.onAuthReady = function(role, user) {
     document.body.classList.remove('role-office');
   } else {
     roleMode = localStorage.getItem('be-role') || 'office';
+    if (roleMode === 'office') currentFilters.team = 'all';
     const toggle = document.getElementById('roleToggle');
     if (toggle) toggle.classList.remove('hidden');
     document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('hidden'));
