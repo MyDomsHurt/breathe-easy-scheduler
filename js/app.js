@@ -369,14 +369,16 @@ function openModal(j) {
   document.getElementById('modalSub').textContent =
     `${formatDate(j.date)} · ${j.time || '—'} · ${j.team_lead}`;
 
-  // Google Maps link from address text
+  // Reliable Google Maps link (works better on mobile – opens native app when available)
   const mapsUrl = j.address
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(j.address)}`
+    ? `https://maps.google.com/?q=${encodeURIComponent(j.address)}`
     : null;
   const mapsLink = mapsUrl
     ? `<a href="${mapsUrl}" target="_blank" rel="noopener noreferrer"
-         class="inline-flex items-center gap-1.5 mt-1 text-sm font-medium text-brand-600 hover:text-brand-800 hover:underline">
-         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+         class="inline-flex items-center justify-center gap-2 mt-2 w-full sm:w-auto px-3 py-2.5 rounded-lg
+                bg-brand-50 border border-brand-200 text-brand-700 font-medium text-sm
+                active:bg-brand-100 hover:bg-brand-100 transition-colors">
+         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
          </svg>
