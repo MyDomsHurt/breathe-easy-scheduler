@@ -7,6 +7,7 @@ let currentFilters = {
   team: 'all',
   type: 'all',
   date: 'all',
+  range: 'today', // 'today' | 'this_week' | 'next_week'
   search: ''
 };
 let viewMode = 'date'; // 'date' | 'team'
@@ -168,13 +169,44 @@ function bindEvents() {
   document.getElementById('roleOffice').addEventListener('click', () => setRole('office'));
   document.getElementById('roleTech').addEventListener('click', () => setRole('tech'));
   applyRoleUI();
+
+  // Quick date range (technician)
+  document.querySelectorAll('.range-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentFilters.range = btn.dataset.range;
+      // Clear the precise date select so range takes priority
+      currentFilters.date = 'all';
+      const dateSelect = document.getElementById('dateSelect');
+      if (dateSelect) dateSelect.value = 'all';
+      // Active styles
+      document.querySelectorAll('.range-btn').forEach(b => {
+        b.classList.remove('bg-brand-600', 'text-white');
+        b.classList.add('bg-slate-100', 'text-slate-700');
+      });
+      btn.classList.remove('bg-slate-100', 'text-slate-700');
+      btn.classList.add('bg-brand-600', 'text-white');
+      applyFilters();
+    });
+  });
 }
 
 function setRole(role) {
   roleMode = role;
   localStorage.setItem('be-role', role);
+  if (role === 'tech') {
+    // Default techs onto Today for a clean mobile start
+    currentFilters.range = 'today';
+    currentFilters.date = 'all';
+    document.querySelectorAll('.range-btn').forEach(b => {
+      const active = b.dataset.range === 'today';
+      b.classList.toggle('bg-brand-600', active);
+      b.classList.toggle('text-white', active);
+      b.classList.toggle('bg-slate-100', !active);
+      b.classList.toggle('text-slate-700', !active);
+    });
+  }
   applyRoleUI();
-  applyFilters(); // re-render cards with correct financial visibility
+  applyFilters();
 }
 
 function applyRoleUI() {
@@ -182,15 +214,18 @@ function applyRoleUI() {
   const officeBtn = document.getElementById('roleOffice');
   const techBtn = document.getElementById('roleTech');
   const revenueEl = document.getElementById('revenueTotal');
+  const rangeBar = document.getElementById('techRangeBar');
 
   if (isTech) {
     officeBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
     techBtn.className = 'role-btn px-3 py-1.5 bg-white text-brand-800';
     revenueEl.classList.add('hidden');
+    if (rangeBar) rangeBar.classList.remove('hidden');
   } else {
     officeBtn.className = 'role-btn px-3 py-1.5 bg-white text-brand-800';
     techBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
     revenueEl.classList.remove('hidden');
+    if (rangeBar) rangeBar.classList.add('hidden');
   }
 }
 
@@ -203,13 +238,59 @@ function setActive(selector, activeBtn) {
   activeBtn.classList.remove('bg-slate-100', 'hover:bg-slate-200');
 }
 
+function getRangeBounds(range) {
+  const now = new Date();
+  // Normalise to local date (HK)
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const toISO = (d) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+
+  if (range === 'today') {
+    const iso = toISO(today);
+    return { start: iso, end: iso };
+  }
+
+  if (range === 'this_week') {
+    // Monday as start of week
+    const day = today.getDay(); // 0 Sun … 6 Sat
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + mondayOffset);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    return { start: toISO(monday), end: toISO(sunday) };
+  }
+
+  if (range === 'next_week') {
+    const day = today.getDay();
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    const thisMonday = new Date(today);
+    thisMonday.setDate(today.getDate() + mondayOffset);
+    const nextMonday = new Date(thisMonday);
+    nextMonday.setDate(thisMonday.getDate() + 7);
+    const nextSunday = new Date(nextMonday);
+    nextSunday.setDate(nextMonday.getDate() + 6);
+    return { start: toISO(nextMonday), end: toISO(nextSunday) };
+  }
+
+  return null; // fallback
+}
+
 function applyFilters() {
+  const bounds = getRangeBounds(currentFilters.range);
+
   filtered = allJobs.filter(j => {
     if (currentFilters.week !== 'all' && j.week !== Number(currentFilters.week)) return false;
     if (currentFilters.team !== 'all' && j.team_lead !== currentFilters.team) return false;
     if (currentFilters.type === 'clean' && j.is_return) return false;
     if (currentFilters.type === 'return' && !j.is_return) return false;
     if (currentFilters.date !== 'all' && j.date !== currentFilters.date) return false;
+    if (bounds && (j.date < bounds.start || j.date > bounds.end)) return false;
     if (currentFilters.search) {
       const hay = [
         j.client_name, j.mobile, j.address, j.notes, j.acs, j.invoice
