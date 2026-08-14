@@ -117,6 +117,10 @@
           <button data-month="11" class="month-btn px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200">Nov</button>
           <button data-month="12" class="month-btn px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200">Dec</button>
         </div>
+        <label class="block text-xs font-medium text-slate-600 mb-1">Date</label>
+        <select id="dateSelect" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none mb-3">
+          <option value="all">All dates</option>
+        </select>
         <label class="block text-xs font-medium text-slate-600 mb-1">Team</label>
         <div class="flex flex-wrap gap-1.5 mb-3" id="teamFilters"></div>
         <label class="block text-xs font-medium text-slate-600 mb-1">Type</label>
@@ -125,10 +129,6 @@
           <button data-type="clean" class="type-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-100 hover:bg-slate-200">Cleans</button>
           <button data-type="return" class="type-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-100 hover:bg-slate-200">Returns</button>
         </div>
-        <label class="block text-xs font-medium text-slate-600 mb-1">Date</label>
-        <select id="dateSelect" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
-          <option value="all">All dates</option>
-        </select>
       </div>
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
         <h2 class="font-semibold text-sm text-slate-500 uppercase tracking-wide mb-3">Snapshot</h2>
