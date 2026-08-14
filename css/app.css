@@ -56,43 +56,36 @@
   }
 }
 
-/* ---- Compact mode (tech / mobile density) ---- */
+/* ---- Compact mode: cube / tile grid ---- */
 body.compact.role-tech .job-card.compact-card {
-  padding: 0.4rem 0.6rem !important;
-  border-radius: 0.5rem;
+  padding: 0 !important;
+  border-radius: 0.75rem;
   box-shadow: none;
+  border: 1px solid rgba(0,0,0,0.06);
+  min-height: 88px;
 }
 body.compact.role-tech .job-card.compact-card:hover,
 body.compact.role-tech .job-card.compact-card:active {
   transform: none;
-  box-shadow: none;
-  background: #f8fafc;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
-body.compact.role-tech #jobsContainer {
-  gap: 0.35rem !important;
-}
 body.compact.role-tech #jobsContainer > section {
-  margin-bottom: 0.6rem !important;
+  margin-bottom: 0.75rem !important;
 }
-body.compact.role-tech #jobsContainer .grid {
-  gap: 0.35rem !important;
-}
-
 body.compact.role-tech section > .sticky {
   top: 100px;
-  padding-top: 0.15rem !important;
-  padding-bottom: 0.15rem !important;
-  margin-bottom: 0.25rem !important;
+  padding-top: 0.2rem !important;
+  padding-bottom: 0.2rem !important;
+  margin-bottom: 0.35rem !important;
 }
 body.compact.role-tech #viewTitle,
 body.compact.role-tech main > .flex.items-center.justify-between {
-  display: none !important; /* extra vertical space */
+  display: none !important;
 }
-
 body.compact.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
-  padding-top: 0.35rem !important;
+  padding-top: 0.4rem !important;
   padding-bottom: 0.75rem !important;
-  padding-left: 0.6rem !important;
-  padding-right: 0.6rem !important;
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
 }
