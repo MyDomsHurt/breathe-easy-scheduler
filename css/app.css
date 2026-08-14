@@ -24,7 +24,7 @@
   body.role-tech main > .flex.items-center.justify-between.mb-4 { margin-bottom: 0.5rem !important; }
   body.role-tech #viewTitle { font-size: 1rem; }
   body.role-tech .job-card { padding: 0.75rem; }
-  body.role-tech section > .sticky { top: 148px; }
+  body.role-tech section > .sticky { top: calc(var(--app-header-h, 57px) + 96px); }
 }
 
 @media (min-width: 1024px) {
@@ -46,7 +46,7 @@ body.compact.role-tech .job-card.compact-card:active {
 }
 body.compact.role-tech #jobsContainer > section { margin-bottom: 0.75rem !important; }
 body.compact.role-tech section > .sticky {
-  top: 148px;
+  top: calc(var(--app-header-h, 57px) + 96px);
   padding-top: 0.2rem !important;
   padding-bottom: 0.2rem !important;
   margin-bottom: 0.35rem !important;
@@ -60,10 +60,33 @@ body.compact.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
   padding-right: 0.5rem !important;
 }
 
-/* Sticky tech controls: range + team stay visible while scrolling */
+/* Header height driven by JS so range bar never slips under header */
 #techRangeBar {
+  top: var(--app-header-h, 57px) !important;
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
+  z-index: 40;
 }
 #techTeamBar .team-btn {
   white-space: nowrap;
+}
+
+/* Tech: hide empty Filters sidebar entirely */
+body.role-tech aside {
+  display: none !important;
+}
+body.role-tech .max-w-7xl.mx-auto.px-4.py-5.grid {
+  display: block !important;
+}
+body.role-tech main {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Tech header: keep single row so sticky offset is stable */
+body.role-tech header .max-w-7xl {
+  flex-wrap: nowrap;
+}
+body.role-tech #jobCount,
+body.role-tech #returnCount {
+  display: none !important;
 }
