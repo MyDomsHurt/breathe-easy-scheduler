@@ -37,7 +37,12 @@
           <p class="text-xs text-brand-100">August 2026 Scheduler</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 text-sm">
+      <div class="flex items-center gap-3 text-sm">
+        <!-- Role toggle -->
+        <div class="flex rounded-lg overflow-hidden border border-white/25 text-xs font-medium">
+          <button id="roleOffice" class="role-btn px-3 py-1.5 bg-white text-brand-800">Office</button>
+          <button id="roleTech" class="role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20">Technician</button>
+        </div>
         <span id="jobCount" class="bg-white/15 px-2.5 py-1 rounded-full">— jobs</span>
         <span id="returnCount" class="bg-amber-500/90 text-white px-2.5 py-1 rounded-full hidden">0 returns</span>
         <span id="revenueTotal" class="bg-emerald-500/90 text-white px-2.5 py-1 rounded-full">$0</span>
