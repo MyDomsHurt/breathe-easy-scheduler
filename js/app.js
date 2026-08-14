@@ -92,6 +92,21 @@ function phoneButton(raw, opts) {
     '</svg>' + esc(label) + '</a>';
 }
 
+function mapsButton(address, opts) {
+  opts = opts || {};
+  if (!address) return '';
+  const q = cleanAddressForMaps(address);
+  if (!q) return '';
+  const url = 'https://maps.google.com/?q=' + encodeURIComponent(q);
+  const cls = opts.cls || 'inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-sky-50 border border-sky-200 text-sky-800 font-semibold text-sm active:bg-sky-100 hover:bg-sky-100 transition-colors';
+  const label = opts.label != null ? opts.label : 'Maps';
+  return '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="' + cls + '" onclick="event.stopPropagation()">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
+    '<path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>' +
+    '<path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>' +
+    '</svg>' + esc(label) + '</a>';
+}
+
 function esc(str) {
   if (str == null) return '';
   return String(str).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
@@ -656,13 +671,20 @@ function jobCard(j) {
     ? '<div class="mt-2 px-2.5 py-1.5 rounded-lg border text-[12px] leading-snug break-words" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + ';overflow-wrap:anywhere"><span class="font-medium">' +
       esc(j.address) + '</span>' + (j.district ? '<span class="ml-1.5 opacity-70 text-[10px] font-semibold tracking-wide">' + esc(j.district) + '</span>' : '') + '</div>'
     : '';
-  const callBtn = j.mobile ? '<div class="mt-2">' + phoneButton(j.mobile, { cls: callCls }) + '</div>' : '';
+  const mapsCls = 'inline-flex items-center justify-center gap-1.5 flex-1 min-w-0 px-3 py-2.5 rounded-lg bg-sky-50 border border-sky-200 text-sky-800 font-semibold text-sm active:bg-sky-100';
+  const phoneCls = 'inline-flex items-center justify-center gap-1.5 flex-1 min-w-0 px-3 py-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold text-sm active:bg-emerald-100';
+  const actions = [];
+  if (j.mobile) actions.push(phoneButton(j.mobile, { cls: phoneCls, label: String(j.mobile).trim() }));
+  if (j.address) actions.push(mapsButton(j.address, { cls: mapsCls, label: 'Maps' }));
+  const actionRow = actions.length
+    ? '<div class="mt-2 flex gap-2">' + actions.join('') + '</div>'
+    : '';
   return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
     '<div class="flex items-start justify-between gap-2 mb-1"><div class="min-w-0"><p class="font-medium text-sm truncate">' + esc(j.client_name) + '</p>' +
     '<p class="text-xs text-slate-500 truncate">' + esc(displayTime(j)) + '</p></div><div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div></div>' +
     '<div class="flex items-center gap-1.5 flex-wrap mt-1.5">' + teamChip + units + '</div>' +
     addressBlock + (j.notes ? '<p class="text-xs text-slate-500 mt-1.5 line-clamp-2 break-words" style="overflow-wrap:anywhere">' + esc(j.notes) + '</p>' : '') +
-    callBtn + '</article>';
+    actionRow + '</article>';
 }
 
 function bindCardClicks() {
