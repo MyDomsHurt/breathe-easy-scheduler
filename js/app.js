@@ -7,11 +7,11 @@ let currentFilters = {
   team: 'all',
   type: 'all',
   date: 'all',
-  range: 'today', // 'today' | 'this_week' | 'next_week'
+  range: 'today',
   search: ''
 };
-let viewMode = 'date'; // 'date' | 'team'
-let roleMode = localStorage.getItem('be-role') || 'office'; // 'office' | 'tech'
+let viewMode = 'date';
+let roleMode = localStorage.getItem('be-role') || 'office';
 
 const TEAMS = ['Josh', 'Matthew', 'Tiago', 'Nick', 'Alun', 'Iggi'];
 const TEAM_COLORS = {
@@ -35,6 +35,20 @@ const DISTRICT_COLORS = {
   'L-M':  { bg: '#A2C4C9', border: '#76A5AF', text: '#1a3338' }
 };
 const DISTRICT_FALLBACK = { bg: '#F3F4F6', border: '#D1D5DB', text: '#374151' };
+
+// Parse "9.00am" / "01.00pm" / "9:30 AM" → minutes since midnight
+function timeToMinutes(t) {
+  if (!t) return 9999;
+  const s = String(t).toLowerCase().replace(/\s+/g, '');
+  const m = s.match(/^(\d{1,2})[.:](\d{2})(am|pm)?$/);
+  if (!m) return 9999;
+  let h = parseInt(m[1], 10);
+  const min = parseInt(m[2], 10);
+  const ap = m[3] || '';
+  if (ap === 'pm' && h < 12) h += 12;
+  if (ap === 'am' && h === 12) h = 0;
+  return h * 60 + min;
+}
 
 async function init() {
   try {
@@ -64,7 +78,7 @@ async function init() {
 
     allJobs.sort((a, b) => {
       if (a.date !== b.date) return a.date.localeCompare(b.date);
-      return (a.time || '').localeCompare(b.time || '');
+      return timeToMinutes(a.time) - timeToMinutes(b.time);
     });
     buildTeamButtons();
     buildDateSelect();
@@ -177,7 +191,6 @@ function bindEvents() {
 }
 
 function setRole(role) {
-  // Allowlist technicians can never switch to Office
   if (window.__forcedRole === 'tech') {
     role = 'tech';
   }
@@ -185,7 +198,6 @@ function setRole(role) {
   roleMode = role;
   localStorage.setItem('be-role', role);
   if (role === 'tech') {
-    // Default techs onto Today for a clean mobile start
     viewMode = 'date';
     currentFilters.range = 'today';
     currentFilters.date = 'all';
@@ -222,6 +234,9 @@ function applyRoleUI() {
     const prev = dateSelect.previousElementSibling;
     if (prev && prev.tagName === 'LABEL') hideEls.push(prev);
   }
+
+  document.body.classList.toggle('role-tech', isTech);
+  document.body.classList.toggle('role-office', !isTech);
 
   if (isTech) {
     officeBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
@@ -309,10 +324,10 @@ function applyFilters() {
     return true;
   });
 
-  // Always keep chronological order (date, then time)
+  // Real chronological order (date, then clock time with am/pm)
   filtered.sort((a, b) => {
     if (a.date !== b.date) return a.date.localeCompare(b.date);
-    return (a.time || '').localeCompare(b.time || '');
+    return timeToMinutes(a.time) - timeToMinutes(b.time);
   });
 
   updateHeaderStats();
@@ -387,7 +402,7 @@ function renderByDate(container) {
   const dates = Object.keys(groups).sort();
 
   container.innerHTML = dates.map(date => {
-    const jobs = groups[date].slice().sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+    const jobs = groups[date].slice().sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
     const dayTotal = jobs.reduce((s, j) => s + (j.amount || 0), 0);
     const returns = jobs.filter(j => j.is_return).length;
 
@@ -416,7 +431,7 @@ function renderByTeam(container) {
   container.innerHTML = order.map(team => {
     const jobs = groups[team].slice().sort((a, b) => {
       if (a.date !== b.date) return a.date.localeCompare(b.date);
-      return (a.time || '').localeCompare(b.time || '');
+      return timeToMinutes(a.time) - timeToMinutes(b.time);
     });
     const dayTotal = jobs.reduce((s, j) => s + (j.amount || 0), 0);
     const returns = jobs.filter(j => j.is_return).length;
@@ -508,7 +523,6 @@ function bindCardClicks() {
 function cleanAddressForMaps(raw) {
   if (!raw) return '';
   let a = String(raw).trim();
-
   a = a
     .replace(/^(Flat|Unit|Room|Apt|Apartment|Suite)\s*[A-Z0-9\-\/]+[,\s]*/i, '')
     .replace(/\b\d{1,2}\s*(\/F|F|th\s*Floor|st\s*Floor|nd\s*Floor|rd\s*Floor|Floor)\b[,\s]*/gi, '')
@@ -518,7 +532,6 @@ function cleanAddressForMaps(raw) {
     .replace(/^[,\s\-]+/, '')
     .replace(/\s{2,}/g, ' ')
     .trim();
-
   if (a.length < 8) return raw.trim();
   return a;
 }
@@ -621,12 +634,11 @@ function esc(str) {
     .replace(/"/g, '"');
 }
 
-// Boot only after Firebase auth confirms the user
 window.onAuthReady = function(role, user) {
-  window.__forcedRole = role; // 'office' | 'tech' from allowlist
+  window.__forcedRole = role;
   if (role === 'tech') {
     roleMode = 'tech';
-    viewMode = 'date'; // always chronological for technicians
+    viewMode = 'date';
     localStorage.setItem('be-role', 'tech');
     const toggle = document.getElementById('roleToggle');
     if (toggle) toggle.classList.add('hidden');
