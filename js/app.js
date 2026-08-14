@@ -23,7 +23,6 @@ const TEAM_COLORS = {
   Iggi: 'bg-indigo-100 text-indigo-800'
 };
 
-// Soft pastel backgrounds matching the original spreadsheet conditional formatting
 const DISTRICT_COLORS = {
   'HKN':  { bg: '#CFE2F3', border: '#9FC5E8', text: '#1e3a5f' },
   'HKS':  { bg: '#9FC5E8', border: '#6FA8DC', text: '#1e3a5f' },
@@ -74,8 +73,7 @@ async function init() {
   } catch (err) {
     document.getElementById('jobsContainer').innerHTML =
       `<div class="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4">
-        Failed to load job data. Serve this folder over HTTP
-        (e.g. <code class="bg-red-100 px-1 rounded">npx serve .</code>).
+        Failed to load job data.
         <br><span class="text-sm">${err.message}</span>
       </div>`;
   }
@@ -179,6 +177,7 @@ function bindEvents() {
 }
 
 function setRole(role) {
+  // Allowlist technicians can never switch to Office
   if (window.__forcedRole === 'tech') {
     role = 'tech';
   }
@@ -186,6 +185,8 @@ function setRole(role) {
   roleMode = role;
   localStorage.setItem('be-role', role);
   if (role === 'tech') {
+    // Default techs onto Today for a clean mobile start
+    viewMode = 'date';
     currentFilters.range = 'today';
     currentFilters.date = 'all';
     document.querySelectorAll('.range-btn').forEach(b => {
@@ -307,6 +308,13 @@ function applyFilters() {
     }
     return true;
   });
+
+  // Always keep chronological order (date, then time)
+  filtered.sort((a, b) => {
+    if (a.date !== b.date) return a.date.localeCompare(b.date);
+    return (a.time || '').localeCompare(b.time || '');
+  });
+
   updateHeaderStats();
   updateStatsPanel();
   render();
@@ -379,7 +387,7 @@ function renderByDate(container) {
   const dates = Object.keys(groups).sort();
 
   container.innerHTML = dates.map(date => {
-    const jobs = groups[date];
+    const jobs = groups[date].slice().sort((a, b) => (a.time || '').localeCompare(b.time || ''));
     const dayTotal = jobs.reduce((s, j) => s + (j.amount || 0), 0);
     const returns = jobs.filter(j => j.is_return).length;
 
@@ -406,7 +414,10 @@ function renderByTeam(container) {
   const order = TEAMS.filter(t => groups[t]);
 
   container.innerHTML = order.map(team => {
-    const jobs = groups[team];
+    const jobs = groups[team].slice().sort((a, b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date);
+      return (a.time || '').localeCompare(b.time || '');
+    });
     const dayTotal = jobs.reduce((s, j) => s + (j.amount || 0), 0);
     const returns = jobs.filter(j => j.is_return).length;
 
@@ -612,16 +623,23 @@ function esc(str) {
 
 // Boot only after Firebase auth confirms the user
 window.onAuthReady = function(role, user) {
-  window.__forcedRole = role;
+  window.__forcedRole = role; // 'office' | 'tech' from allowlist
   if (role === 'tech') {
     roleMode = 'tech';
+    viewMode = 'date'; // always chronological for technicians
     localStorage.setItem('be-role', 'tech');
     const toggle = document.getElementById('roleToggle');
     if (toggle) toggle.classList.add('hidden');
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.add('hidden'));
+    document.body.classList.add('role-tech');
+    document.body.classList.remove('role-office');
   } else {
     roleMode = localStorage.getItem('be-role') || 'office';
     const toggle = document.getElementById('roleToggle');
     if (toggle) toggle.classList.remove('hidden');
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('hidden'));
+    document.body.classList.add('role-office');
+    document.body.classList.remove('role-tech');
   }
   init();
 };
