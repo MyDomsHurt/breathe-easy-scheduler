@@ -67,7 +67,6 @@
         </div>
       </div>
       <div class="flex items-center gap-3 text-sm flex-wrap justify-end">
-        <!-- Role toggle (Office users only – hidden for technicians) -->
         <div id="roleToggle" class="flex rounded-lg overflow-hidden border border-white/25 text-xs font-medium">
           <button id="roleOffice" class="role-btn px-3 py-1.5 bg-white text-brand-800">Office</button>
           <button id="roleTech" class="role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20">Technician</button>
@@ -83,25 +82,27 @@
 
   <!-- Technician quick date range (mobile-first) -->
   <div id="techRangeBar" class="bg-white border-b border-slate-200 sticky top-[57px] z-40 hidden">
-    <div class="max-w-7xl mx-auto px-3 py-2.5">
-      <div class="flex gap-2 overflow-x-auto no-scrollbar">
-        <button data-range="today" class="range-btn shrink-0 flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-brand-600 text-white active:scale-95 transition">Today</button>
-        <button data-range="this_week" class="range-btn shrink-0 flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">This Week</button>
-        <button data-range="next_week" class="range-btn shrink-0 flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">Next Week</button>
+    <div class="max-w-7xl mx-auto px-3 py-2">
+      <div class="flex gap-2 items-center">
+        <div class="flex gap-1.5 flex-1 overflow-x-auto no-scrollbar">
+          <button data-range="today" class="range-btn shrink-0 flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-brand-600 text-white active:scale-95 transition">Today</button>
+          <button data-range="this_week" class="range-btn shrink-0 flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">This Week</button>
+          <button data-range="next_week" class="range-btn shrink-0 flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">Next Week</button>
+        </div>
+        <button id="compactToggle" type="button" class="shrink-0 px-2.5 py-2 rounded-lg text-xs font-semibold border border-slate-200 bg-white text-slate-600 active:scale-95 transition" title="Toggle compact view">
+          Compact
+        </button>
       </div>
     </div>
   </div>
 
   <div class="max-w-7xl mx-auto px-4 py-5 grid grid-cols-1 lg:grid-cols-12 gap-5">
-    <!-- Sidebar Filters -->
     <aside class="lg:col-span-3 space-y-4">
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
         <h2 class="font-semibold text-sm text-slate-500 uppercase tracking-wide mb-3">Filters</h2>
-        
         <label class="block text-xs font-medium text-slate-600 mb-1">Search</label>
         <input id="searchInput" type="search" placeholder="Client, mobile, address..." 
                class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none mb-3" />
-
         <label class="block text-xs font-medium text-slate-600 mb-1">Month</label>
         <div class="flex flex-wrap gap-1.5 mb-3" id="monthFilters">
           <button data-month="all" class="month-btn active px-3 py-1.5 rounded-lg text-sm font-medium bg-brand-600 text-white">All</button>
@@ -118,37 +119,29 @@
           <button data-month="11" class="month-btn px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200">Nov</button>
           <button data-month="12" class="month-btn px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200">Dec</button>
         </div>
-
         <label class="block text-xs font-medium text-slate-600 mb-1">Team</label>
         <div class="flex flex-wrap gap-1.5 mb-3" id="teamFilters">
           <button data-team="all" class="team-btn active px-3 py-1.5 rounded-lg text-sm font-medium bg-brand-600 text-white">All</button>
         </div>
-
         <label class="block text-xs font-medium text-slate-600 mb-1">Type</label>
         <div class="flex gap-1.5 mb-3">
           <button data-type="all" class="type-btn active px-3 py-1.5 rounded-lg text-sm font-medium bg-brand-600 text-white">All</button>
           <button data-type="clean" class="type-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-100 hover:bg-slate-200">Cleans</button>
           <button data-type="return" class="type-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-100 hover:bg-slate-200">Returns</button>
         </div>
-
         <label class="block text-xs font-medium text-slate-600 mb-1">Date</label>
         <select id="dateSelect" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
           <option value="all">All dates</option>
         </select>
       </div>
-
-      <!-- Stats card -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
         <h2 class="font-semibold text-sm text-slate-500 uppercase tracking-wide mb-3">Snapshot</h2>
         <div id="statsPanel" class="space-y-2 text-sm"></div>
       </div>
-
       <div class="text-xs text-slate-400 px-1">
         Full year 2026 · Empty ACs = Return
       </div>
     </aside>
-
-    <!-- Main content -->
     <main class="lg:col-span-9">
       <div class="flex items-center justify-between mb-4">
         <h2 id="viewTitle" class="font-semibold text-lg">All Jobs</h2>
@@ -157,18 +150,12 @@
           <button id="viewByTeam" class="view-btn px-3 py-1.5 rounded-lg text-sm bg-slate-100 hover:bg-slate-200">By Team</button>
         </div>
       </div>
-
-      <div id="jobsContainer" class="space-y-6">
-        <!-- Jobs rendered here -->
-      </div>
-
+      <div id="jobsContainer" class="space-y-6"></div>
       <div id="emptyState" class="hidden text-center py-16 text-slate-400">
         <p class="text-lg">No jobs match the current filters</p>
       </div>
     </main>
   </div>
-
-  <!-- Job detail modal -->
   <div id="modal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/50" id="modalBackdrop"></div>
     <div class="absolute inset-x-4 top-10 bottom-10 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
@@ -182,10 +169,7 @@
       <div id="modalBody" class="p-5 overflow-y-auto flex-1 text-sm space-y-3"></div>
     </div>
   </div>
-
-  </div><!-- /appRoot -->
-
-  <!-- Firebase compat (same as dashboard / returns) -->
+  </div>
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
   <script src="js/auth.js"></script>
