@@ -24,6 +24,11 @@ body.role-tech aside > .text-xs.text-slate-400 {
   display: none !important;
 }
 
+/* Always hide Month filters for technicians (Office only) */
+body.role-tech #monthFilters {
+  display: none !important;
+}
+
 /* Mobile tech: minimal filter chrome so jobs fill the screen */
 @media (max-width: 1023px) {
   /* Collapse the Filters card to a thin team-only strip */
@@ -37,9 +42,9 @@ body.role-tech aside > .text-xs.text-slate-400 {
     display: none !important;
   }
 
-  /* Hide Search, Week, Type, Date (labels + controls) — JS also hides most of these */
+  /* Hide Search, Month, Type, Date (labels + controls) */
   body.role-tech #searchInput,
-  body.role-tech #weekFilters,
+  body.role-tech #monthFilters,
   body.role-tech #dateSelect,
   body.role-tech label {
     display: none !important;
@@ -68,7 +73,7 @@ body.role-tech aside > .text-xs.text-slate-400 {
     padding-right: 0.6rem !important;
   }
 
-  /* Hide By Date / By Team switch on tech (already done in JS, belt-and-braces) */
+  /* Hide By Date / By Team switch on tech */
   body.role-tech main > .flex.items-center.justify-between.mb-4 {
     display: none !important;
   }
@@ -100,12 +105,5 @@ body.role-tech aside > .text-xs.text-slate-400 {
 
   body.role-tech section {
     margin-bottom: 0.75rem;
-  }
-}
-
-/* Desktop tech: keep team filter visible but still hide snapshot */
-@media (min-width: 1024px) {
-  body.role-tech aside > .bg-white.rounded-xl:first-of-type > h2 {
-    /* keep heading on desktop if wanted, or hide */
   }
 }
