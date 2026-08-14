@@ -26,7 +26,8 @@
     "tiagogiri334@gmail.com": { role: "tech" },
     "iggi.king@gmail.com": { role: "tech" },
     "neltrestium@gmail.com": { role: "tech" },
-    "sudor23@gmail.com": { role: "tech" }
+    "sudor23@gmail.com": { role: "tech" },
+    "itstartswiththemind@gmail.com": { role: "tech" }
   };
 
   function resolveRole(email) {
