@@ -654,7 +654,14 @@ function jobCard(j) {
     const notesBlock = j.notes
       ? '<p class="text-[12px] text-slate-600 mt-2 leading-snug line-clamp-3 border-l-2 border-slate-200 pl-2 break-words" style="overflow-wrap:anywhere">' + esc(j.notes) + '</p>'
       : '';
-    const callBtn = j.mobile ? '<div class="mt-2.5">' + phoneButton(j.mobile, { cls: callCls }) + '</div>' : '';
+    const techMapsCls = 'inline-flex items-center justify-center gap-1.5 flex-1 min-w-0 px-3 py-2.5 rounded-lg bg-sky-50 border border-sky-200 text-sky-800 font-semibold text-sm active:bg-sky-100';
+    const techPhoneCls = 'inline-flex items-center justify-center gap-1.5 flex-1 min-w-0 px-3 py-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold text-sm active:bg-emerald-100';
+    const techActions = [];
+    if (j.mobile) techActions.push(phoneButton(j.mobile, { cls: techPhoneCls, label: String(j.mobile).trim() }));
+    if (j.address) techActions.push(mapsButton(j.address, { cls: techMapsCls, label: 'Maps' }));
+    const techActionRow = techActions.length
+      ? '<div class="mt-2.5 flex gap-2">' + techActions.join('') + '</div>'
+      : '';
     return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3.5 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
       '<div class="flex items-start justify-between gap-2">' +
         '<div class="min-w-0 flex-1">' +
@@ -663,7 +670,7 @@ function jobCard(j) {
         '</div>' +
         '<div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div>' +
       '</div>' +
-      addressBlock + notesBlock + callBtn +
+      addressBlock + notesBlock + techActionRow +
       '<div class="flex items-center gap-1.5 flex-wrap mt-2.5">' + teamChip + units + '</div></article>';
   }
 
