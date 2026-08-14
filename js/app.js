@@ -216,16 +216,39 @@ function applyRoleUI() {
   const revenueEl = document.getElementById('revenueTotal');
   const rangeBar = document.getElementById('techRangeBar');
 
+  // Week filter block (label + buttons)
+  const weekFilters = document.getElementById('weekFilters');
+  const dateSelect = document.getElementById('dateSelect');
+
+  // Hide the week section and the date dropdown in tech mode
+  const hideEls = [];
+  if (weekFilters) {
+    hideEls.push(weekFilters);
+    // Also hide the "Week" label that sits just above it
+    const prev = weekFilters.previousElementSibling;
+    if (prev && prev.tagName === 'LABEL') hideEls.push(prev);
+  }
+  if (dateSelect) {
+    hideEls.push(dateSelect);
+    const prev = dateSelect.previousElementSibling;
+    if (prev && prev.tagName === 'LABEL') hideEls.push(prev);
+  }
+
   if (isTech) {
     officeBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
     techBtn.className = 'role-btn px-3 py-1.5 bg-white text-brand-800';
     revenueEl.classList.add('hidden');
     if (rangeBar) rangeBar.classList.remove('hidden');
+    hideEls.forEach(el => el.classList.add('hidden'));
+    // Reset week/date filters so they don't interfere
+    currentFilters.week = 'all';
+    currentFilters.date = 'all';
   } else {
     officeBtn.className = 'role-btn px-3 py-1.5 bg-white text-brand-800';
     techBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
     revenueEl.classList.remove('hidden');
     if (rangeBar) rangeBar.classList.add('hidden');
+    hideEls.forEach(el => el.classList.remove('hidden'));
   }
 }
 
