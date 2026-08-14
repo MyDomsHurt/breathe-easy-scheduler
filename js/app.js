@@ -532,21 +532,36 @@ function render() {
 function renderByDate(container) {
   const groups = groupBy(filtered, j => j.date);
   const dates = Object.keys(groups).sort();
+  const isTech = roleMode === 'tech';
+  const gridCls = (compactMode && isTech)
+    ? 'grid grid-cols-2 gap-1.5'
+    : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3';
+
   container.innerHTML = dates.map(date => {
     const jobs = groups[date].slice().sort((a, b) => jobSortMinutes(a) - jobSortMinutes(b));
     const dayTotal = jobs.reduce((s, j) => s + (j.amount || 0), 0);
     const returns = jobs.filter(j => j.is_return).length;
-    return '<section class="day-section">' +
-      '<div class="day-header-sticky flex items-center justify-between">' +
-        '<h3 class="font-semibold text-brand-800">' +
-          formatDate(date) + '<span class="text-slate-400 font-normal text-sm ml-2">' + jobs.length + ' jobs</span>' +
-          (returns ? '<span class="ml-1 text-amber-600 text-sm">· ' + returns + ' return' + (returns > 1 ? 's' : '') + '</span>' : '') +
-        '</h3>' +
-        (roleMode === 'office' ? '<span class="text-sm font-medium text-emerald-700">' + formatMoney(dayTotal) + '</span>' : '') +
-      '</div>' +
-      '<div class="' + (compactMode && roleMode === 'tech' ? 'grid grid-cols-2 gap-1.5' : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3') + '">' +
-        jobs.map(jobCard).join('') +
-      '</div></section>';
+    const returnBit = returns
+      ? '<span class="text-amber-700 font-medium"> · ' + returns + ' return' + (returns > 1 ? 's' : '') + '</span>'
+      : '';
+    const moneyBit = (!isTech)
+      ? '<span class="text-sm font-semibold text-emerald-700 tabular-nums">' + formatMoney(dayTotal) + '</span>'
+      : '';
+
+    return (
+      '<section class="day-block" data-date="' + date + '">' +
+        '<div class="day-block-head">' +
+          '<div class="min-w-0">' +
+            '<p class="day-block-date">' + formatDate(date) + '</p>' +
+            '<p class="day-block-meta">' + jobs.length + ' job' + (jobs.length !== 1 ? 's' : '') + returnBit + '</p>' +
+          '</div>' +
+          moneyBit +
+        '</div>' +
+        '<div class="day-block-body ' + gridCls + '">' +
+          jobs.map(jobCard).join('') +
+        '</div>' +
+      '</section>'
+    );
   }).join('');
   bindCardClicks();
 }
