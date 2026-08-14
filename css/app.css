@@ -16,42 +16,96 @@
 #modalBody::-webkit-scrollbar { width: 6px; }
 #modalBody::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-/* Technician: Team only — Search/Snapshot hidden via JS + CSS */
+/* ========== Technician mode ========== */
+
+/* Hide Snapshot + footer note always for tech */
+body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
+body.role-tech aside > .text-xs.text-slate-400 {
+  display: none !important;
+}
+
+/* Mobile tech: minimal filter chrome so jobs fill the screen */
 @media (max-width: 1023px) {
-  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
-  body.role-tech aside > .text-xs.text-slate-400 {
+  /* Collapse the Filters card to a thin team-only strip */
+  body.role-tech aside > .bg-white.rounded-xl:first-of-type {
+    padding: 0.4rem 0.5rem !important;
+    border-radius: 0.75rem;
+  }
+
+  /* Hide the "Filters" heading */
+  body.role-tech aside > .bg-white.rounded-xl:first-of-type > h2 {
     display: none !important;
   }
 
-  body.role-tech aside > .bg-white.rounded-xl:first-of-type {
-    padding: 0.75rem !important;
+  /* Hide Search, Week, Type, Date (labels + controls) — JS also hides most of these */
+  body.role-tech #searchInput,
+  body.role-tech #weekFilters,
+  body.role-tech #dateSelect,
+  body.role-tech label {
+    display: none !important;
   }
 
+  /* Team pills: very compact */
+  body.role-tech #teamFilters {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 0.25rem !important;
+    margin: 0 !important;
+  }
+
+  body.role-tech #teamFilters .team-btn {
+    padding: 0.25rem 0.55rem !important;
+    font-size: 0.7rem !important;
+    line-height: 1.2 !important;
+    border-radius: 0.4rem !important;
+  }
+
+  /* Page padding reduced */
   body.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
-    padding-top: 0.5rem !important;
-    padding-bottom: 1rem !important;
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.75rem !important;
+    padding-left: 0.6rem !important;
+    padding-right: 0.6rem !important;
   }
 
+  /* Hide By Date / By Team switch on tech (already done in JS, belt-and-braces) */
   body.role-tech main > .flex.items-center.justify-between.mb-4 {
-    margin-bottom: 0.5rem !important;
+    display: none !important;
   }
 
-  body.role-tech #viewTitle {
-    font-size: 1rem;
-  }
-
+  /* Tighter job cards */
   body.role-tech .job-card {
-    padding: 0.75rem;
+    padding: 0.55rem 0.65rem !important;
   }
 
+  body.role-tech .job-card .mt-2 {
+    margin-top: 0.35rem !important;
+  }
+
+  /* Day sticky header sits under range bar */
   body.role-tech section > .sticky {
-    top: 108px;
+    top: 100px;
+    padding-top: 0.15rem !important;
+    padding-bottom: 0.15rem !important;
+  }
+
+  body.role-tech section > .sticky h3 {
+    font-size: 0.9rem;
+  }
+
+  /* Tighter gap between job cards */
+  body.role-tech .grid.gap-2 {
+    gap: 0.4rem !important;
+  }
+
+  body.role-tech section {
+    margin-bottom: 0.75rem;
   }
 }
 
+/* Desktop tech: keep team filter visible but still hide snapshot */
 @media (min-width: 1024px) {
-  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
-  body.role-tech aside > .text-xs.text-slate-400 {
-    display: none !important;
+  body.role-tech aside > .bg-white.rounded-xl:first-of-type > h2 {
+    /* keep heading on desktop if wanted, or hide */
   }
 }
