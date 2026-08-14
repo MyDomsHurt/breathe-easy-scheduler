@@ -21,6 +21,19 @@ const TEAM_COLORS = {
   Iggi: 'bg-indigo-100 text-indigo-800'
 };
 
+// Soft pastel backgrounds for district / area highlighting on cards
+const DISTRICT_COLORS = {
+  'HKN':  'bg-sky-50 border-sky-200 text-sky-900',
+  'KLN':  'bg-amber-50 border-amber-200 text-amber-900',
+  'N-T':  'bg-emerald-50 border-emerald-200 text-emerald-900',
+  'N-TW': 'bg-lime-50 border-lime-200 text-lime-900',
+  'HKS':  'bg-violet-50 border-violet-200 text-violet-900',
+  'TKO':  'bg-cyan-50 border-cyan-200 text-cyan-900',
+  'S-K':  'bg-rose-50 border-rose-200 text-rose-900',
+  'L-T':  'bg-indigo-50 border-indigo-200 text-indigo-900'
+};
+const DISTRICT_FALLBACK = 'bg-slate-50 border-slate-200 text-slate-700';
+
 async function init() {
   try {
     // Prefer manifest of small part files, then fall back to single jobs.json
@@ -296,15 +309,26 @@ function jobCard(j) {
   const returnBadge = j.is_return
     ? `<span class="return-badge text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">RETURN</span>`
     : '';
-  const acs = j.acs
-    ? `<span class="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">${esc(j.acs)}</span>`
-    : '';
   const amount = j.amount != null
     ? `<span class="font-semibold text-emerald-700">${formatMoney(j.amount)}</span>`
     : `<span class="text-slate-400 text-xs">—</span>`;
 
+  // Units (ACs) — always show clearly
+  const units = j.acs
+    ? `<span class="inline-flex items-center text-xs font-semibold bg-white/80 border border-slate-200 text-slate-800 px-2 py-0.5 rounded-md shadow-sm">${esc(j.acs)}</span>`
+    : `<span class="inline-flex items-center text-xs font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">No units (Return)</span>`;
+
+  // Address with pastel district colour
+  const distClass = DISTRICT_COLORS[j.district] || DISTRICT_FALLBACK;
+  const addressBlock = j.address
+    ? `<div class="mt-2 px-2.5 py-1.5 rounded-lg border text-[12px] leading-snug ${distClass}">
+         <span class="font-medium">${esc(j.address)}</span>
+         ${j.district ? `<span class="ml-1.5 opacity-70 text-[10px] font-semibold tracking-wide">${esc(j.district)}</span>` : ''}
+       </div>`
+    : '';
+
   return `
-    <article class="job-card bg-white border border-slate-200 rounded-xl p-3 cursor-pointer"
+    <article class="job-card bg-white border border-slate-200 rounded-xl p-3 cursor-pointer hover:shadow-md transition-shadow"
              data-id="${esc(j.job_id)}">
       <div class="flex items-start justify-between gap-2 mb-1">
         <div class="min-w-0">
@@ -316,11 +340,14 @@ function jobCard(j) {
           ${amount}
         </div>
       </div>
+
       <div class="flex items-center gap-1.5 flex-wrap mt-1.5">
         <span class="text-[10px] font-medium px-1.5 py-0.5 rounded ${TEAM_COLORS[j.team_lead] || 'bg-slate-100'}">${esc(j.team_lead)}</span>
-        ${acs}
-        ${j.district ? `<span class="text-[10px] text-slate-400">${esc(j.district)}</span>` : ''}
+        ${units}
       </div>
+
+      ${addressBlock}
+
       ${j.notes ? `<p class="text-xs text-slate-500 mt-1.5 line-clamp-2">${esc(j.notes)}</p>` : ''}
     </article>`;
 }
@@ -340,13 +367,32 @@ function openModal(j) {
   document.getElementById('modalSub').textContent =
     `${formatDate(j.date)} · ${j.time || '—'} · ${j.team_lead}`;
 
+  // Google Maps link from address text
+  const mapsUrl = j.address
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(j.address)}`
+    : null;
+  const mapsLink = mapsUrl
+    ? `<a href="${mapsUrl}" target="_blank" rel="noopener noreferrer"
+         class="inline-flex items-center gap-1.5 mt-1 text-sm font-medium text-brand-600 hover:text-brand-800 hover:underline">
+         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+           <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+           <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+         </svg>
+         Open in Google Maps
+       </a>`
+    : '';
+
+  const addressHtml = j.address
+    ? `<div class="text-slate-800 break-words">${esc(j.address)}</div>${mapsLink}`
+    : '—';
+
   const rows = [
     ['Type', j.is_return ? '<span class="text-amber-600 font-semibold">Return</span>' : 'Full clean'],
     ['Team', `${j.team_lead}${j.team_members ? ` (${j.team_members})` : ''}`],
-    ['ACs', j.acs || '— (empty → treated as return)'],
+    ['ACs / Units', j.acs || '— (empty → treated as return)'],
     ['Amount', j.amount != null ? formatMoney(j.amount) : '—'],
     ['Mobile', j.mobile || '—'],
-    ['Address', j.address || '—'],
+    ['Address', addressHtml],
     ['District', j.district || '—'],
     ['Invoice', j.invoice || '—'],
     ['Receipt', j.receipt || '—'],
