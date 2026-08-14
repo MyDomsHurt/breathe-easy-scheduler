@@ -215,6 +215,13 @@ function syncHeaderHeight() {
   if (!header) return;
   const h = Math.ceil(header.getBoundingClientRect().height);
   document.documentElement.style.setProperty('--app-header-h', h + 'px');
+  const rangeBar = document.getElementById('techRangeBar');
+  let barH = 0;
+  if (rangeBar && !rangeBar.classList.contains('hidden')) {
+    barH = Math.ceil(rangeBar.getBoundingClientRect().height);
+  }
+  document.documentElement.style.setProperty('--tech-bar-h', barH + 'px');
+  document.documentElement.style.setProperty('--day-sticky-top', (h + barH) + 'px');
 }
 
 function applyCompactUI() {
@@ -459,11 +466,17 @@ function renderByDate(container) {
     const jobs = groups[date].slice().sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
     const dayTotal = jobs.reduce((s, j) => s + (j.amount || 0), 0);
     const returns = jobs.filter(j => j.is_return).length;
-    return '<section><div class="flex items-center justify-between mb-2 sticky top-[60px] bg-slate-50/95 backdrop-blur py-1 z-10"><h3 class="font-semibold text-brand-800">' +
-      formatDate(date) + '<span class="text-slate-400 font-normal text-sm ml-2">' + jobs.length + ' jobs</span>' +
-      (returns ? '<span class="ml-1 text-amber-600 text-sm">· ' + returns + ' return' + (returns > 1 ? 's' : '') + '</span>' : '') +
-      '</h3>' + (roleMode === 'office' ? '<span class="text-sm font-medium text-emerald-700">' + formatMoney(dayTotal) + '</span>' : '') +
-      '</div><div class="' + (compactMode && roleMode === 'tech' ? 'grid grid-cols-2 gap-1.5' : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3') + '">' + jobs.map(jobCard).join('') + '</div></section>';
+    return '<section class="day-section">' +
+      '<div class="day-header-sticky flex items-center justify-between mb-2 bg-slate-50/95 backdrop-blur py-1.5 z-10">' +
+        '<h3 class="font-semibold text-brand-800">' +
+          formatDate(date) + '<span class="text-slate-400 font-normal text-sm ml-2">' + jobs.length + ' jobs</span>' +
+          (returns ? '<span class="ml-1 text-amber-600 text-sm">· ' + returns + ' return' + (returns > 1 ? 's' : '') + '</span>' : '') +
+        '</h3>' +
+        (roleMode === 'office' ? '<span class="text-sm font-medium text-emerald-700">' + formatMoney(dayTotal) + '</span>' : '') +
+      '</div>' +
+      '<div class="' + (compactMode && roleMode === 'tech' ? 'grid grid-cols-2 gap-1.5' : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3') + '">' +
+        jobs.map(jobCard).join('') +
+      '</div></section>';
   }).join('');
   bindCardClicks();
 }
@@ -482,7 +495,7 @@ function renderByTeam(container) {
       (TEAM_COLORS[team] || 'bg-slate-100') + ' team-chip mr-1">' + team + '</span><span class="text-slate-400 font-normal text-sm">' +
       jobs.length + ' jobs' + (returns ? ' · ' + returns + ' returns' : '') + '</span></h3>' +
       (roleMode === 'office' ? '<span class="text-sm font-medium text-emerald-700">' + formatMoney(dayTotal) + '</span>' : '') +
-      '</div><div class="' + (compactMode && roleMode === 'tech' ? 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3' : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3').replace('grid gap-2 sm:grid-cols-2 xl:grid-cols-3', compactMode && roleMode === 'tech' ? 'grid grid-cols-2 gap-1.5' : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3') + '">' + jobs.map(jobCard).join('') + '</div></section>';
+      '</div><div class="' + (compactMode && roleMode === 'tech' ? 'grid grid-cols-2 gap-1.5' : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3') + '">' + jobs.map(jobCard).join('') + '</div></section>';
   }).join('');
   bindCardClicks();
 }
@@ -501,7 +514,6 @@ function jobCard(j) {
       ? '<span class="font-semibold text-emerald-700">' + formatMoney(j.amount) + '</span>'
       : '<span class="text-slate-400 text-xs">—</span>';
   }
-  // Units chip: show AC count on cleans; leave blank on returns (RETURN badge covers type)
   const units = j.acs
     ? '<span class="inline-flex items-center text-[11px] font-semibold bg-white/80 border border-slate-200 text-slate-800 px-1.5 py-0.5 rounded">' + esc(j.acs) + '</span>'
     : '';
@@ -535,13 +547,13 @@ function jobCard(j) {
 
   if (isTech) {
     const addressBlock = j.address
-      ? '<div class="mt-2 px-3 py-2 rounded-lg border text-[13px] leading-snug font-medium" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + '">' +
+      ? '<div class="mt-2 px-3 py-2 rounded-lg border text-[13px] leading-snug font-medium break-words" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + ';overflow-wrap:anywhere">' +
         esc(j.address) + (j.district ? ' <span class="opacity-70 text-[11px] font-semibold">' + esc(j.district) + '</span>' : '') + '</div>'
       : '';
     const notesBlock = j.notes
-      ? '<p class="text-[12px] text-slate-600 mt-2 leading-snug line-clamp-3 border-l-2 border-slate-200 pl-2">' + esc(j.notes) + '</p>'
+      ? '<p class="text-[12px] text-slate-600 mt-2 leading-snug line-clamp-3 border-l-2 border-slate-200 pl-2 break-words" style="overflow-wrap:anywhere">' + esc(j.notes) + '</p>'
       : '';
-    return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3.5 cursor-pointer hover:shadow-md transition-shadow" data-id="' + esc(j.job_id) + '">' +
+    return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3.5 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
       '<div class="flex items-start justify-between gap-2">' +
         '<div class="min-w-0 flex-1">' +
           '<p class="text-[15px] font-bold text-slate-800 leading-tight">' + esc(j.time || '—') + '</p>' +
@@ -554,14 +566,14 @@ function jobCard(j) {
   }
 
   const addressBlock = j.address
-    ? '<div class="mt-2 px-2.5 py-1.5 rounded-lg border text-[12px] leading-snug" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + '"><span class="font-medium">' +
+    ? '<div class="mt-2 px-2.5 py-1.5 rounded-lg border text-[12px] leading-snug break-words" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + ';overflow-wrap:anywhere"><span class="font-medium">' +
       esc(j.address) + '</span>' + (j.district ? '<span class="ml-1.5 opacity-70 text-[10px] font-semibold tracking-wide">' + esc(j.district) + '</span>' : '') + '</div>'
     : '';
-  return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3 cursor-pointer hover:shadow-md transition-shadow" data-id="' + esc(j.job_id) + '">' +
+  return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
     '<div class="flex items-start justify-between gap-2 mb-1"><div class="min-w-0"><p class="font-medium text-sm truncate">' + esc(j.client_name) + '</p>' +
     '<p class="text-xs text-slate-500 truncate">' + esc(j.time || '—') + '</p></div><div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div></div>' +
     '<div class="flex items-center gap-1.5 flex-wrap mt-1.5">' + teamChip + units + '</div>' +
-    addressBlock + (j.notes ? '<p class="text-xs text-slate-500 mt-1.5 line-clamp-2">' + esc(j.notes) + '</p>' : '') + '</article>';
+    addressBlock + (j.notes ? '<p class="text-xs text-slate-500 mt-1.5 line-clamp-2 break-words" style="overflow-wrap:anywhere">' + esc(j.notes) + '</p>' : '') + '</article>';
 }
 
 function bindCardClicks() {
