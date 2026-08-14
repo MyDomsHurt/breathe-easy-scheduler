@@ -24,30 +24,46 @@
   font-size: 0.7rem;
   letter-spacing: 0.02em;
 }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
 #modalBody::-webkit-scrollbar { width: 6px; }
 #modalBody::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-/* ===== Technician mode: full-width jobs, no office chrome ===== */
-body.role-tech aside {
-  display: none !important;
+@media (max-width: 1023px) {
+  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
+  body.role-tech aside > .text-xs.text-slate-400 { display: none !important; }
+  body.role-tech aside > .bg-white.rounded-xl:first-of-type { padding: 0.75rem !important; }
+  body.role-tech .max-w-7xl.mx-auto.px-4.py-5 { padding-top: 0.5rem !important; padding-bottom: 1rem !important; }
+  body.role-tech main > .flex.items-center.justify-between.mb-4 { margin-bottom: 0.5rem !important; }
+  body.role-tech #viewTitle { font-size: 1rem; }
+  body.role-tech .job-card { padding: 0.75rem; }
 }
-body.role-tech .max-w-7xl.mx-auto.px-4.py-5.grid {
-  display: block !important;
+
+@media (min-width: 1024px) {
+  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
+  body.role-tech aside > .text-xs.text-slate-400 { display: none !important; }
 }
-body.role-tech main {
-  width: 100% !important;
-  max-width: 100% !important;
+
+body.compact .job-card.compact-card {
+  padding: 0 !important;
+  border-radius: 0.75rem;
+  box-shadow: none;
+  border: 1px solid rgba(0,0,0,0.06);
+  min-height: 100px;
 }
-body.role-tech main > .flex.items-center.justify-between.mb-4 {
-  display: none !important;
+body.compact .job-card.compact-card:hover,
+body.compact .job-card.compact-card:active {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
-body.role-tech #jobCount,
-body.role-tech #returnCount,
-body.role-tech #revenueTotal {
-  display: none !important;
+body.compact #jobsContainer > section { margin-bottom: 0.75rem !important; }
+body.compact.role-tech #viewTitle,
+body.compact.role-tech main > .flex.items-center.justify-between { display: none !important; }
+body.compact .max-w-7xl.mx-auto.px-4.py-5 {
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.75rem !important;
+}
+body.compact.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
 }
 
 #techRangeBar {
@@ -59,6 +75,25 @@ body.role-tech #revenueTotal {
   white-space: nowrap;
 }
 
+body.role-tech aside {
+  display: none !important;
+}
+body.role-tech .max-w-7xl.mx-auto.px-4.py-5.grid {
+  display: block !important;
+}
+body.role-tech main {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+body.role-tech header .max-w-7xl {
+  flex-wrap: nowrap;
+}
+body.role-tech #jobCount,
+body.role-tech #returnCount {
+  display: none !important;
+}
+
 #jobsContainer,
 #jobsContainer > section,
 #jobsContainer .grid {
@@ -67,107 +102,30 @@ body.role-tech #revenueTotal {
   overflow-x: hidden;
 }
 
-/* ===== Day blocks: each date is one solid container ===== */
-.day-block {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 1rem;
-  overflow: hidden;
-  margin-bottom: 1rem;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+.day-header-sticky {
+  position: sticky;
+  top: var(--app-header-h, 57px);
+  z-index: 20;
+  background: rgba(248, 250, 252, 0.97);
+  backdrop-filter: blur(6px);
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
 }
-.day-block-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.7rem 1rem;
-  background: #f1f5f9;
-  border-bottom: 1px solid #e2e8f0;
-}
-.day-block-date {
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: #0c4a6e;
-  line-height: 1.2;
-  margin: 0;
-}
-.day-block-meta {
-  font-size: 0.75rem;
-  color: #64748b;
-  margin: 0.15rem 0 0;
-  line-height: 1.2;
-}
-.day-block-body {
-  padding: 0.75rem;
-}
-
-/* Technician: lighter day labels, no heavy box */
-body.role-tech .day-block {
+body.role-tech .day-header-sticky,
+body.compact.role-tech .day-header-sticky {
+  position: static;
+  top: auto;
+  backdrop-filter: none;
   background: transparent;
-  border: none;
-  box-shadow: none;
-  border-radius: 0;
-  margin-bottom: 0.75rem;
-}
-body.role-tech .day-block + .day-block {
-  border-top: 1px solid #e2e8f0;
   padding-top: 0.5rem;
-  margin-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
 }
-body.role-tech .day-block-head {
-  background: transparent;
-  border-bottom: none;
-  padding: 0.25rem 0.15rem 0.4rem;
+.day-section {
+  margin-bottom: 1.25rem;
 }
-body.role-tech .day-block-date {
-  font-size: 0.85rem;
-  color: #334155;
-}
-body.role-tech .day-block-body {
-  padding: 0;
-}
-
-@media (max-width: 1023px) {
-  body.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
-    padding-top: 0.5rem !important;
-    padding-bottom: 1rem !important;
-    padding-left: 0.6rem !important;
-    padding-right: 0.6rem !important;
-  }
-  body.role-tech .job-card {
-    padding: 0.75rem;
-  }
-  body.role-office .day-block-head {
-    padding: 0.65rem 0.85rem;
-  }
-  body.role-office .day-block-body {
-    padding: 0.65rem;
-  }
-}
-
-body.compact.role-tech .job-card.compact-card {
-  padding: 0 !important;
-  border-radius: 0.75rem;
-  box-shadow: none;
-  border: 1px solid rgba(0,0,0,0.06);
-  min-height: 100px;
-}
-body.compact.role-tech .job-card.compact-card:hover,
-body.compact.role-tech .job-card.compact-card:active {
-  transform: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-body.compact.role-tech #jobsContainer > section {
-  margin-bottom: 0.75rem !important;
-}
-body.compact.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
-  padding-top: 0.4rem !important;
-  padding-bottom: 0.75rem !important;
-  padding-left: 0.5rem !important;
-  padding-right: 0.5rem !important;
-}
-
-body.role-office .job-card {
-  min-width: 0;
+body.role-tech .day-section + .day-section {
+  margin-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.25rem;
 }
