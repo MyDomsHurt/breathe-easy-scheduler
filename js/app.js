@@ -1,4 +1,4 @@
-/* Breathe-Easy Scheduler — 2026 Full Year — with tel: call buttons */
+/* Breathe-Easy Scheduler — 2026 Full Year */
 
 let allJobs = [];
 let filtered = [];
@@ -90,6 +90,11 @@ function phoneButton(raw, opts) {
     '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
     '<path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>' +
     '</svg>' + esc(label) + '</a>';
+}
+
+function esc(str) {
+  if (str == null) return '';
+  return String(str).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
 }
 
 async function init() {
@@ -353,6 +358,9 @@ function applyRoleUI() {
     if (revenueEl) revenueEl.classList.add('hidden');
     if (rangeBar) rangeBar.classList.remove('hidden');
     hideEls.forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.add('hidden'));
+    const vtWrap = document.getElementById('viewTitle');
+    if (vtWrap && vtWrap.parentElement) vtWrap.parentElement.classList.add('hidden');
     currentFilters.month = 'all';
     currentFilters.date = 'all';
     currentFilters.search = '';
@@ -365,6 +373,9 @@ function applyRoleUI() {
     if (revenueEl) revenueEl.classList.remove('hidden');
     if (rangeBar) rangeBar.classList.add('hidden');
     hideEls.forEach(el => el.classList.remove('hidden'));
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('hidden'));
+    const vtWrap = document.getElementById('viewTitle');
+    if (vtWrap && vtWrap.parentElement) vtWrap.parentElement.classList.remove('hidden');
   }
   applyCompactUI();
   syncHeaderHeight();
@@ -708,11 +719,6 @@ function formatDate(iso) {
 
 function formatMoney(n) {
   return '$' + Math.round(n).toLocaleString('en-HK');
-}
-
-function esc(str) {
-  if (str == null) return '';
-  return String(str).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
 }
 
 window.onAuthReady = function(role, user) {
