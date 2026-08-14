@@ -16,10 +16,19 @@
 #modalBody::-webkit-scrollbar { width: 6px; }
 #modalBody::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-/* Technician mobile: jobs first — hide filters panel entirely */
+/* Technician mobile: keep Search + Team; hide Snapshot only */
 @media (max-width: 1023px) {
-  body.role-tech aside {
+  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
+  body.role-tech aside > .text-xs.text-slate-400 {
     display: none !important;
+  }
+
+  body.role-tech aside > .bg-white.rounded-xl:first-of-type {
+    padding: 0.75rem !important;
+  }
+
+  body.role-tech #searchInput {
+    font-size: 16px;
   }
 
   body.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
