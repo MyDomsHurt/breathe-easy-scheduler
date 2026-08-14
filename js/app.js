@@ -40,14 +40,28 @@ const DISTRICT_FALLBACK = { bg: '#F3F4F6', border: '#D1D5DB', text: '#374151' };
 function timeToMinutes(t) {
   if (!t) return 9999;
   const s = String(t).toLowerCase().replace(/\s+/g, '');
-  const m = s.match(/^(\d{1,2})[.:](\d{2})(am|pm)?$/);
+  const m = s.match(/(\d{1,2})(?:[.:](\d{2}))?(am|pm)?/);
   if (!m) return 9999;
   let h = parseInt(m[1], 10);
-  const min = parseInt(m[2], 10);
+  const min = m[2] != null ? parseInt(m[2], 10) : 0;
   const ap = m[3] || '';
   if (ap === 'pm' && h < 12) h += 12;
   if (ap === 'am' && h === 12) h = 0;
+  if (!ap && h >= 1 && h <= 6) h += 12;
   return h * 60 + min;
+}
+
+function jobSortMinutes(j) {
+  const fromTime = timeToMinutes(j.time);
+  if (fromTime !== 9999) return fromTime;
+  return timeToMinutes(j.client_name || '');
+}
+
+function displayTime(j) {
+  if (j.time) return j.time;
+  const s = String(j.client_name || '');
+  const m = s.match(/(\d{1,2}(?:[.:]\d{2})?\s*(?:am|pm)?)/i);
+  return m ? m[1].replace(/\s+/g, '') : '—';
 }
 
 function jobMonth(j) {
@@ -76,7 +90,7 @@ async function init() {
     if (allJobs.length === 0) throw new Error('No job data found');
     allJobs.sort((a, b) => {
       if (a.date !== b.date) return a.date.localeCompare(b.date);
-      return timeToMinutes(a.time) - timeToMinutes(b.time);
+      return jobSortMinutes(a) - jobSortMinutes(b);
     });
     buildTeamButtons();
     buildDateSelect();
@@ -398,7 +412,7 @@ function applyFilters() {
   });
   filtered.sort((a, b) => {
     if (a.date !== b.date) return a.date.localeCompare(b.date);
-    return timeToMinutes(a.time) - timeToMinutes(b.time);
+    return jobSortMinutes(a) - jobSortMinutes(b);
   });
   updateHeaderStats();
   updateStatsPanel();
@@ -463,7 +477,7 @@ function renderByDate(container) {
   const groups = groupBy(filtered, j => j.date);
   const dates = Object.keys(groups).sort();
   container.innerHTML = dates.map(date => {
-    const jobs = groups[date].slice().sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
+    const jobs = groups[date].slice().sort((a, b) => jobSortMinutes(a) - jobSortMinutes(b));
     const dayTotal = jobs.reduce((s, j) => s + (j.amount || 0), 0);
     const returns = jobs.filter(j => j.is_return).length;
     return '<section class="day-section">' +
@@ -487,7 +501,7 @@ function renderByTeam(container) {
   container.innerHTML = order.map(team => {
     const jobs = groups[team].slice().sort((a, b) => {
       if (a.date !== b.date) return a.date.localeCompare(b.date);
-      return timeToMinutes(a.time) - timeToMinutes(b.time);
+      return jobSortMinutes(a) - jobSortMinutes(b);
     });
     const dayTotal = jobs.reduce((s, j) => s + (j.amount || 0), 0);
     const returns = jobs.filter(j => j.is_return).length;
@@ -501,7 +515,7 @@ function renderByTeam(container) {
 }
 
 function jobCard(j) {
-  const returnBadge = j.is_return ? '<span class="return-badge text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">RETURN</span>' : '';
+  const returnBadge = j.is_return ? '<span class="return-badge shrink-0 whitespace-nowrap text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">RETURN</span>' : '';
   const isTech = roleMode === 'tech';
   const isPaid = !!(j.receipt && String(j.receipt).trim());
   let rightBadge;
@@ -530,11 +544,11 @@ function jobCard(j) {
       : '';
     return '<article class="job-card compact-card rounded-xl cursor-pointer active:opacity-90 overflow-hidden" data-id="' + esc(j.job_id) + '" style="' + distBar + '">' +
       '<div class="p-2 min-h-[100px] flex flex-col">' +
-        '<div class="flex items-start justify-between gap-1">' +
-          '<p class="font-semibold text-[12px] leading-tight line-clamp-1 text-slate-800">' + esc(j.client_name) + '</p>' +
+        '<div class="flex items-start justify-between gap-1 min-w-0">' +
+          '<p class="font-semibold text-[12px] leading-tight line-clamp-1 text-slate-800 min-w-0 flex-1 pr-1">' + esc(j.client_name) + '</p>' +
           returnBadge +
         '</div>' +
-        '<p class="text-[12px] font-semibold text-slate-700 mt-0.5">' + esc(j.time || '—') + '</p>' +
+        '<p class="text-[12px] font-semibold text-slate-700 mt-0.5">' + esc(displayTime(j)) + '</p>' +
         shortAddr +
         '<div class="flex items-center gap-1.5 shrink-0 mt-auto pt-1.5">' + teamChip + units + '</div>' +
       '</div></article>';
@@ -556,7 +570,7 @@ function jobCard(j) {
     return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3.5 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
       '<div class="flex items-start justify-between gap-2">' +
         '<div class="min-w-0 flex-1">' +
-          '<p class="text-[15px] font-bold text-slate-800 leading-tight">' + esc(j.time || '—') + '</p>' +
+          '<p class="text-[15px] font-bold text-slate-800 leading-tight">' + esc(displayTime(j)) + '</p>' +
           '<p class="text-[14px] font-semibold text-slate-700 mt-0.5 truncate">' + esc(j.client_name) + '</p>' +
         '</div>' +
         '<div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div>' +
@@ -571,7 +585,7 @@ function jobCard(j) {
     : '';
   return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
     '<div class="flex items-start justify-between gap-2 mb-1"><div class="min-w-0"><p class="font-medium text-sm truncate">' + esc(j.client_name) + '</p>' +
-    '<p class="text-xs text-slate-500 truncate">' + esc(j.time || '—') + '</p></div><div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div></div>' +
+    '<p class="text-xs text-slate-500 truncate">' + esc(displayTime(j)) + '</p></div><div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div></div>' +
     '<div class="flex items-center gap-1.5 flex-wrap mt-1.5">' + teamChip + units + '</div>' +
     addressBlock + (j.notes ? '<p class="text-xs text-slate-500 mt-1.5 line-clamp-2 break-words" style="overflow-wrap:anywhere">' + esc(j.notes) + '</p>' : '') + '</article>';
 }
@@ -600,7 +614,7 @@ function cleanAddressForMaps(raw) {
 
 function openModal(j) {
   document.getElementById('modalTitle').textContent = j.client_name;
-  document.getElementById('modalSub').textContent = formatDate(j.date) + ' · ' + (j.time || '—') + ' · ' + j.team_lead;
+  document.getElementById('modalSub').textContent = formatDate(j.date) + ' · ' + displayTime(j) + ' · ' + j.team_lead;
   const mapsUrl = j.address ? 'https://maps.google.com/?q=' + encodeURIComponent(cleanAddressForMaps(j.address)) : null;
   const mapsLink = mapsUrl
     ? '<a href="' + mapsUrl + '" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 mt-2 w-full sm:w-auto px-3 py-2.5 rounded-lg bg-brand-50 border border-brand-200 text-brand-700 font-medium text-sm active:bg-brand-100 hover:bg-brand-100 transition-colors">Open in Google Maps</a>'
