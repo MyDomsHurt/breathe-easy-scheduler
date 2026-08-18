@@ -1,27 +1,29 @@
-/* Cross-app switcher only */
+/* Cross-app switcher — high visibility */
 .app-switch {
   display: inline-flex;
   align-items: center;
   margin-left: 0.75rem;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.45);
+  border-radius: 10px;
   overflow: hidden;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
   letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 .app-switch-link {
-  padding: 0.35rem 0.65rem;
-  color: rgba(255,255,255,0.75);
+  padding: 0.45rem 0.85rem;
+  color: #fff;
   text-decoration: none;
-  background: transparent;
+  background: #10b981;
 }
-.app-switch-link:hover { color: #fff; background: rgba(255,255,255,0.08); }
+.app-switch-link:hover { background: #34d399; color: #fff; }
 .app-switch-current {
-  padding: 0.35rem 0.65rem;
-  background: rgba(255,255,255,0.95);
+  padding: 0.45rem 0.85rem;
+  background: #fff;
   color: #0c4a6e;
 }
+.app-switch-go { font-weight: 800; }
 @media (max-width: 640px) {
-  .app-switch { margin-left: 0.4rem; }
+  .app-switch { margin-left: 0.35rem; font-size: 0.7rem; }
 }
