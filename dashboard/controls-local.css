@@ -1,0 +1,27 @@
+/* Cross-app switcher only */
+.app-switch {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.app-switch-link {
+  padding: 0.35rem 0.65rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  background: transparent;
+}
+.app-switch-link:hover { color: #fff; background: rgba(255,255,255,0.08); }
+.app-switch-current {
+  padding: 0.35rem 0.65rem;
+  background: rgba(255,255,255,0.95);
+  color: #0c4a6e;
+}
+@media (max-width: 640px) {
+  .app-switch { margin-left: 0.4rem; }
+}
