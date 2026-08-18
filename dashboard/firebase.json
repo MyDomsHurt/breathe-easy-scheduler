@@ -4,12 +4,14 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "**/*.xlsx",
+      "README.md"
     ],
-    "rewrites": [
+    "headers": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "**/*.@(js|css|json)",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
       }
     ]
   }
