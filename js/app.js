@@ -225,30 +225,29 @@ function bindEvents() {
 }
 
 function syncHeaderHeight() {
-  const header = document.querySelector('header');
-  if (!header) return;
-  const h = Math.ceil(header.getBoundingClientRect().height);
+  const nav = document.querySelector('.be-nav') || document.querySelector('header');
+  const toolbar = document.getElementById('officeToolbar');
+  let h = nav ? Math.ceil(nav.getBoundingClientRect().height) : 56;
+  let t = 0;
+  if (toolbar && toolbar.offsetParent !== null) {
+    t = Math.ceil(toolbar.getBoundingClientRect().height);
+  }
   document.documentElement.style.setProperty('--app-header-h', h + 'px');
+  document.documentElement.style.setProperty('--app-toolbar-h', t + 'px');
   const rangeBar = document.getElementById('techRangeBar');
   let barH = 0;
   if (rangeBar && !rangeBar.classList.contains('hidden')) {
     barH = Math.ceil(rangeBar.getBoundingClientRect().height);
   }
   document.documentElement.style.setProperty('--tech-bar-h', barH + 'px');
-  document.documentElement.style.setProperty('--day-sticky-top', (h + barH) + 'px');
+  document.documentElement.style.setProperty('--day-sticky-top', (h + t + barH) + 'px');
 }
 
 function applyCompactUI() {
   document.body.classList.toggle('compact', compactMode);
   const btn = document.getElementById('compactToggle');
   if (!btn) return;
-  if (compactMode) {
-    btn.classList.remove('bg-white/10', 'text-white', 'border-white/30');
-    btn.classList.add('bg-white', 'text-brand-800', 'border-white');
-  } else {
-    btn.classList.add('bg-white/10', 'text-white', 'border-white/30');
-    btn.classList.remove('bg-white', 'text-brand-800', 'border-white');
-  }
+  btn.classList.toggle('active', compactMode);
 }
 
 function setRole(role) {
@@ -327,10 +326,12 @@ function applyRoleUI() {
   });
   document.body.classList.toggle('role-tech', isTech);
   document.body.classList.toggle('role-office', !isTech);
+  if (officeBtn && techBtn) {
+    officeBtn.className = 'role-btn' + (isTech ? '' : ' active');
+    techBtn.className = 'role-btn' + (isTech ? ' active' : '');
+  }
   if (isTech) {
-    officeBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
-    techBtn.className = 'role-btn px-3 py-1.5 bg-white text-brand-800';
-    revenueEl.classList.add('hidden');
+    if (revenueEl) revenueEl.classList.add('hidden');
     if (rangeBar) rangeBar.classList.remove('hidden');
     hideEls.forEach(el => el.classList.add('hidden'));
     currentFilters.month = 'all';
@@ -340,9 +341,7 @@ function applyRoleUI() {
     if (!currentFilters.team || currentFilters.team === 'all') currentFilters.team = 'Josh';
     buildTeamButtons();
   } else {
-    officeBtn.className = 'role-btn px-3 py-1.5 bg-white text-brand-800';
-    techBtn.className = 'role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20';
-    revenueEl.classList.remove('hidden');
+    if (revenueEl) revenueEl.classList.remove('hidden');
     if (rangeBar) rangeBar.classList.add('hidden');
     hideEls.forEach(el => el.classList.remove('hidden'));
   }
@@ -708,7 +707,7 @@ function formatMoney(n) {
 
 function esc(str) {
   if (str == null) return '';
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(str).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
 }
 
 window.onAuthReady = function(role, user) {
