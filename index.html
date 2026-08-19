@@ -24,9 +24,13 @@
       }
     }
   </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="css/be-shell.css" />
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
+<body class="bg-slate-50 text-slate-800 min-h-screen" style="font-family:'Libre Franklin',system-ui,sans-serif">
 
   <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
     <div class="w-full max-w-sm">
@@ -54,30 +58,26 @@
   </div>
 
   <div id="appRoot" class="hidden">
-  <header class="bg-brand-800 text-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center font-bold text-lg">BE</div>
-        <div>
-          <h1 class="font-semibold text-lg leading-tight">Breathe-Easy</h1>
-          <p class="text-xs text-brand-100">2026 Scheduler</p>
+  <header class="be-shell" id="be-shell">
+    <div class="be-shell-inner">
+      <a class="be-brand" href="./">Breathe-Easy <span class="be-brand-ctx">· Schedule</span></a>
+      <nav class="be-switch" id="be-app-switch" aria-label="Switch app">
+        <span class="active">Schedule</span>
+        <a href="dashboard/">Performance</a>
+      </nav>
+      <div class="be-tools" id="be-tools">
+        <div id="roleToggle">
+          <button id="roleOffice" type="button" class="role-btn be-on">Office</button>
+          <button id="roleTech" type="button" class="role-btn">Technician</button>
         </div>
+        <button id="compactToggle" type="button" title="Toggle compact view">Compact</button>
+        <span id="jobCount" class="be-chip">— jobs</span>
+        <span id="returnCount" class="be-chip be-chip-amber hidden">0 returns</span>
+        <span id="revenueTotal" class="be-chip be-chip-green">$0</span>
       </div>
-      <div class="flex items-center gap-3 text-sm flex-wrap justify-end">
-        <nav id="be-app-switch" class="flex rounded-lg overflow-hidden border-2 border-white/40 text-xs font-bold shadow-sm" aria-label="Switch app">
-          <span class="px-3 py-1.5 bg-white text-brand-800">Schedule</span>
-          <a href="dashboard/" class="px-3 py-1.5 bg-emerald-500 text-white hover:bg-emerald-400 transition">Performance</a>
-        </nav>
-        <div id="roleToggle" class="flex rounded-lg overflow-hidden border border-white/25 text-xs font-medium">
-          <button id="roleOffice" class="role-btn px-3 py-1.5 bg-white text-brand-800">Office</button>
-          <button id="roleTech" class="role-btn px-3 py-1.5 bg-white/10 text-white hover:bg-white/20">Technician</button>
-        </div>
-        <button id="compactToggle" type="button" class="shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-white/30 bg-white/10 text-white hover:bg-white/20 active:scale-95 transition" title="Toggle compact view">Compact</button>
-        <span id="jobCount" class="bg-white/15 px-2.5 py-1 rounded-full">— jobs</span>
-        <span id="returnCount" class="bg-amber-500/90 text-white px-2.5 py-1 rounded-full hidden">0 returns</span>
-        <span id="revenueTotal" class="bg-emerald-500/90 text-white px-2.5 py-1 rounded-full">$0</span>
-        <span id="userChip" class="hidden bg-white/15 px-2.5 py-1 rounded-full text-xs max-w-[140px] truncate"></span>
-        <button id="logoutBtn" class="text-xs bg-white/10 hover:bg-white/20 px-2.5 py-1 rounded-full">Sign out</button>
+      <div class="be-user">
+        <span id="userChip" class="be-user-chip hidden"></span>
+        <button id="logoutBtn" type="button">Sign out</button>
       </div>
     </div>
   </header>
@@ -172,6 +172,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/shell-ui.js"></script>
   <script src="js/unit-stats.js"></script>
   <script src="js/app-nav.js"></script>
 </body>
