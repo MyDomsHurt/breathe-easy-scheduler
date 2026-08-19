@@ -1,0 +1,284 @@
+/* Breathe-Easy universal app shell — Schedule, Performance, future surfaces share this */
+:root {
+  --be-navy: #0E4D91;
+  --be-navy-deep: #0a3a6e;
+  --be-blue: #2896D1;
+  --be-soft: #e8f5fc;
+  --be-accent-soft: #d6eef9;
+  --be-ink: #0c1a33;
+  --be-mute: #5a6f8a;
+  --be-line: rgba(14, 77, 145, 0.12);
+  --be-line-strong: rgba(14, 77, 145, 0.22);
+  --be-green: #0d9488;
+  --be-font: "Libre Franklin", Arial, system-ui, -apple-system, sans-serif;
+}
+
+.be-shell {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--be-line);
+  padding-top: env(safe-area-inset-top, 0);
+  box-shadow: 0 1px 0 rgba(14, 77, 145, 0.04);
+  font-family: var(--be-font);
+}
+
+.be-shell-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.be-brand {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--be-navy-deep);
+  text-decoration: none;
+  letter-spacing: -0.03em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.be-brand:hover { color: var(--be-navy); }
+.be-brand-ctx {
+  color: var(--be-blue);
+  font-weight: 700;
+}
+
+/* Universal app switcher */
+.be-switch {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid var(--be-line-strong);
+  flex-shrink: 0;
+  background: #fff;
+}
+.be-switch a,
+.be-switch span {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--be-mute);
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  background: transparent;
+  font-family: inherit;
+}
+.be-switch a:hover {
+  color: var(--be-navy);
+  background: var(--be-soft);
+}
+.be-switch .active {
+  color: var(--be-navy-deep);
+  background: var(--be-accent-soft);
+  font-weight: 800;
+}
+
+.be-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Segmented role toggle */
+.be-shell #roleToggle {
+  display: inline-flex;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid var(--be-line-strong);
+  background: #fff;
+}
+.be-shell .role-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px !important;
+  font-size: 0.78rem !important;
+  font-weight: 600;
+  border: none !important;
+  background: transparent !important;
+  color: var(--be-mute) !important;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 0 !important;
+  transition: background 0.15s, color 0.15s;
+}
+.be-shell .role-btn:hover {
+  color: var(--be-navy) !important;
+  background: var(--be-soft) !important;
+}
+.be-shell .role-btn.be-on {
+  background: var(--be-accent-soft) !important;
+  color: var(--be-navy-deep) !important;
+  font-weight: 700;
+}
+
+.be-shell #compactToggle {
+  padding: 6px 12px !important;
+  border-radius: 10px !important;
+  font-size: 0.78rem !important;
+  font-weight: 700;
+  border: 1.5px solid var(--be-line-strong) !important;
+  background: #fff !important;
+  color: var(--be-mute) !important;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+.be-shell #compactToggle:hover {
+  color: var(--be-navy) !important;
+  background: var(--be-soft) !important;
+}
+.be-shell #compactToggle.be-on {
+  background: var(--be-accent-soft) !important;
+  color: var(--be-navy-deep) !important;
+}
+
+.be-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--be-soft);
+  color: var(--be-navy);
+  white-space: nowrap;
+}
+.be-chip-amber { background: #fef3c7; color: #b45309; }
+.be-chip-green { background: #d1fae5; color: #047857; }
+
+/* Override Tailwind chip classes from old dark header */
+.be-shell #jobCount,
+.be-shell #userChip {
+  background: var(--be-soft) !important;
+  color: var(--be-navy) !important;
+}
+.be-shell #returnCount {
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+}
+.be-shell #revenueTotal {
+  background: #d1fae5 !important;
+  color: #047857 !important;
+}
+.be-shell #logoutBtn {
+  padding: 6px 12px !important;
+  border-radius: 10px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600;
+  border: 1.5px solid var(--be-line-strong) !important;
+  background: #fff !important;
+  color: var(--be-mute) !important;
+  cursor: pointer;
+  font-family: inherit;
+}
+.be-shell #logoutBtn:hover {
+  color: var(--be-navy) !important;
+  background: var(--be-soft) !important;
+}
+
+.be-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.be-shell .user-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--be-soft);
+  color: var(--be-navy);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.be-shell #btn-signout {
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1.5px solid var(--be-line-strong);
+  background: #fff;
+  color: var(--be-mute);
+  cursor: pointer;
+  font-family: inherit;
+}
+.be-shell #btn-signout:hover {
+  color: var(--be-navy);
+  background: var(--be-soft);
+}
+
+.be-shell .nav-links {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+  min-width: 0;
+}
+.be-shell .nav-links a,
+.be-shell .nav-compete {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--be-mute);
+  text-decoration: none;
+  padding: 7px 12px;
+  border-radius: 10px;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.be-shell .nav-links a:hover,
+.be-shell .nav-compete:hover {
+  color: var(--be-navy);
+  background: var(--be-soft);
+}
+.be-shell .nav-links a.active,
+.be-shell .nav-compete.active {
+  color: var(--be-navy-deep);
+  background: var(--be-accent-soft);
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .be-shell-inner {
+    padding: 8px 12px;
+    gap: 8px;
+    min-height: 0;
+  }
+  .be-brand { font-size: 0.92rem; }
+  .be-switch a,
+  .be-switch span {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
+  .be-tools {
+    width: 100%;
+    justify-content: flex-start;
+    order: 3;
+  }
+  .be-user { margin-left: auto; }
+}
+
+#techRangeBar {
+  top: var(--app-header-h, 56px) !important;
+}
