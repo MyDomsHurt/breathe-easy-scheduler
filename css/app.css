@@ -1,4 +1,243 @@
-/* Small extras beyond Tailwind */
+/* Breathe-Easy Schedule — shared chrome with Performance */
+:root {
+  --navy: #0E4D91;
+  --navy-deep: #0a3a6e;
+  --blue: #2896D1;
+  --cyan: #69C7EE;
+  --soft: #e8f5fc;
+  --ink: #0c1a33;
+  --ink-2: #1a3558;
+  --mute: #5a6f8a;
+  --line: rgba(14, 77, 145, 0.12);
+  --line-strong: rgba(14, 77, 145, 0.22);
+  --accent-soft: #d6eef9;
+  --green: #0d9488;
+  --font: "Libre Franklin", Arial, system-ui, -apple-system, sans-serif;
+  --app-header-h: 56px;
+  --app-toolbar-h: 0px;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse 100% 70% at 100% 0%, rgba(40, 150, 209, 0.1), transparent 50%),
+    radial-gradient(ellipse 80% 50% at 0% 100%, rgba(105, 199, 238, 0.08), transparent 45%),
+    linear-gradient(180deg, #f5fbff 0%, #eef4f8 100%);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Shared light top nav (matches Performance) ─── */
+.be-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 1px 0 rgba(14, 77, 145, 0.04);
+  padding-top: env(safe-area-inset-top, 0);
+}
+.be-nav-inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 16px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.be-nav-brand {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--navy-deep);
+  text-decoration: none;
+  letter-spacing: -0.03em;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+.be-nav-brand span {
+  color: var(--blue);
+  font-weight: 700;
+}
+.be-nav-spacer {
+  flex: 1 1 auto;
+  min-width: 8px;
+}
+
+/* App switch Schedule | Performance */
+.be-app-switch {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.75rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.be-app-current {
+  padding: 0.4rem 0.85rem;
+  background: var(--navy);
+  color: #fff;
+}
+.be-app-link {
+  padding: 0.4rem 0.85rem;
+  text-decoration: none;
+  color: var(--ink-2);
+  background: #fff;
+  transition: background 0.15s, color 0.15s;
+}
+.be-app-link:hover {
+  background: var(--soft);
+  color: var(--navy);
+}
+
+.be-user-chip {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mute);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.be-signout {
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+.be-signout:hover {
+  text-decoration: underline;
+}
+
+/* ─── Ops sub-toolbar (role, counts, compact) ─── */
+.be-toolbar {
+  position: sticky;
+  top: var(--app-header-h, 56px);
+  z-index: 45;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 1px 0 rgba(14, 77, 145, 0.03);
+}
+.be-toolbar-inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.be-role-toggle {
+  display: inline-flex;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  font-size: 12px;
+  font-weight: 700;
+}
+.be-role-toggle .role-btn {
+  padding: 6px 12px;
+  background: #fff;
+  color: var(--mute);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 12px;
+}
+.be-role-toggle .role-btn.active,
+.be-role-toggle .role-btn.bg-white {
+  background: var(--navy);
+  color: #fff;
+}
+/* When JS sets white/dark via Tailwind classes, map them */
+#roleOffice.bg-white,
+#roleTech.bg-white {
+  background: var(--navy) !important;
+  color: #fff !important;
+}
+#roleOffice.bg-white\/10,
+#roleTech.bg-white\/10,
+#roleOffice.bg-slate-100,
+#roleTech.bg-slate-100 {
+  background: #fff !important;
+  color: var(--mute) !important;
+}
+
+.be-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--soft);
+  color: var(--navy-deep);
+  border: 1px solid var(--line);
+}
+.be-chip-amber {
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+.be-chip-green {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+.be-compact-btn {
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.be-compact-btn:hover {
+  background: var(--soft);
+  color: var(--navy);
+}
+.be-compact-btn.active {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+
+@media (max-width: 640px) {
+  .be-nav-inner {
+    padding: 10px 12px;
+    min-height: 0;
+    gap: 8px;
+  }
+  .be-nav-brand {
+    font-size: 14px;
+  }
+  .be-nav-brand span {
+    display: none;
+  }
+  .be-user-chip {
+    display: none !important;
+  }
+  .be-toolbar-inner {
+    padding: 6px 12px;
+    gap: 6px;
+  }
+}
+
+/* ─── Existing schedule UI extras ─── */
 .job-card {
   transition: box-shadow 0.15s ease, transform 0.15s ease;
   max-width: 100%;
@@ -6,7 +245,7 @@
   min-width: 0;
 }
 .job-card:hover {
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 .job-card p,
@@ -24,39 +263,63 @@
   font-size: 0.7rem;
   letter-spacing: 0.02em;
 }
-#modalBody::-webkit-scrollbar { width: 6px; }
-#modalBody::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+#modalBody::-webkit-scrollbar {
+  width: 6px;
+}
+#modalBody::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
 
 @media (max-width: 1023px) {
   body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
-  body.role-tech aside > .text-xs.text-slate-400 { display: none !important; }
-  body.role-tech aside > .bg-white.rounded-xl:first-of-type { padding: 0.75rem !important; }
-  body.role-tech .max-w-7xl.mx-auto.px-4.py-5 { padding-top: 0.5rem !important; padding-bottom: 1rem !important; }
-  body.role-tech main > .flex.items-center.justify-between.mb-4 { margin-bottom: 0.5rem !important; }
-  body.role-tech #viewTitle { font-size: 1rem; }
-  body.role-tech .job-card { padding: 0.75rem; }
+  body.role-tech aside > .text-xs.text-slate-400 {
+    display: none !important;
+  }
+  body.role-tech aside > .bg-white.rounded-xl:first-of-type {
+    padding: 0.75rem !important;
+  }
+  body.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 1rem !important;
+  }
+  body.role-tech main > .flex.items-center.justify-between.mb-4 {
+    margin-bottom: 0.5rem !important;
+  }
+  body.role-tech #viewTitle {
+    font-size: 1rem;
+  }
+  body.role-tech .job-card {
+    padding: 0.75rem;
+  }
 }
 
 @media (min-width: 1024px) {
   body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
-  body.role-tech aside > .text-xs.text-slate-400 { display: none !important; }
+  body.role-tech aside > .text-xs.text-slate-400 {
+    display: none !important;
+  }
 }
 
 body.compact .job-card.compact-card {
   padding: 0 !important;
   border-radius: 0.75rem;
   box-shadow: none;
-  border: 1px solid rgba(0,0,0,0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   min-height: 100px;
 }
 body.compact .job-card.compact-card:hover,
 body.compact .job-card.compact-card:active {
   transform: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
-body.compact #jobsContainer > section { margin-bottom: 0.75rem !important; }
+body.compact #jobsContainer > section {
+  margin-bottom: 0.75rem !important;
+}
 body.compact.role-tech #viewTitle,
-body.compact.role-tech main > .flex.items-center.justify-between { display: none !important; }
+body.compact.role-tech main > .flex.items-center.justify-between {
+  display: none !important;
+}
 body.compact .max-w-7xl.mx-auto.px-4.py-5 {
   padding-top: 0.4rem !important;
   padding-bottom: 0.75rem !important;
@@ -67,7 +330,7 @@ body.compact.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
 }
 
 #techRangeBar {
-  top: var(--app-header-h, 57px) !important;
+  top: calc(var(--app-header-h, 56px) + var(--app-toolbar-h, 0px)) !important;
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
   z-index: 40;
 }
@@ -86,12 +349,15 @@ body.role-tech main {
   max-width: 100% !important;
 }
 
-body.role-tech header .max-w-7xl {
-  flex-wrap: nowrap;
-}
+/* Tech: hide office-only chips */
 body.role-tech #jobCount,
-body.role-tech #returnCount {
+body.role-tech #returnCount,
+body.role-tech #revenueTotal,
+body.role-tech #roleToggle {
   display: none !important;
+}
+body.role-tech #officeToolbar .be-toolbar-inner {
+  justify-content: flex-start;
 }
 
 #jobsContainer,
@@ -104,7 +370,7 @@ body.role-tech #returnCount {
 
 .day-header-sticky {
   position: sticky;
-  top: var(--app-header-h, 57px);
+  top: calc(var(--app-header-h, 56px) + var(--app-toolbar-h, 0px));
   z-index: 20;
   background: rgba(248, 250, 252, 0.97);
   backdrop-filter: blur(6px);
@@ -130,7 +396,6 @@ body.role-tech .day-section + .day-section {
   padding-top: 0.25rem;
 }
 
-/* Full-card Call / Maps actions */
 .card-actions a.card-action {
   text-decoration: none;
   min-height: 40px;

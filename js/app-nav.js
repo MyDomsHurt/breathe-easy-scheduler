@@ -1,26 +1,23 @@
-/* Cross-app nav: Schedule | Performance — non-invasive */
+/* App switch is now in the HTML header — no inject needed */
 (function () {
-  function inject() {
-    if (document.getElementById('be-app-switch')) return;
-    var header = document.querySelector('#appRoot header .max-w-7xl, #appRoot header > div');
-    if (!header) return;
-    var brand = header.querySelector('.flex.items-center.gap-3') || header.firstElementChild;
-    if (!brand) return;
-    var wrap = document.createElement('nav');
-    wrap.id = 'be-app-switch';
-    wrap.setAttribute('aria-label', 'App');
-    wrap.className = 'flex items-center rounded-lg overflow-hidden border border-white/25 text-xs font-semibold ml-1 sm:ml-2';
-    wrap.innerHTML =
-      '<span class="px-2.5 py-1.5 bg-white text-brand-800">Schedule</span>' +
-      '<a href="dashboard/" class="px-2.5 py-1.5 bg-white/10 text-white hover:bg-white/20 transition">Performance</a>';
-    brand.appendChild(wrap);
+  // Measure sticky heights for tech range bar / day headers
+  function measure() {
+    var nav = document.querySelector('.be-nav');
+    var toolbar = document.getElementById('officeToolbar');
+    var h = nav ? nav.getBoundingClientRect().height : 56;
+    var t = toolbar && !toolbar.classList.contains('hidden') ? toolbar.getBoundingClientRect().height : 0;
+    document.documentElement.style.setProperty('--app-header-h', Math.round(h) + 'px');
+    document.documentElement.style.setProperty('--app-toolbar-h', Math.round(t) + 'px');
   }
-  var obs = new MutationObserver(function () {
-    var root = document.getElementById('appRoot');
-    if (root && !root.classList.contains('hidden')) inject();
-  });
-  if (document.body) obs.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
+  window.addEventListener('resize', measure);
   document.addEventListener('DOMContentLoaded', function () {
-    setTimeout(inject, 500);
+    measure();
+    setTimeout(measure, 300);
+    setTimeout(measure, 1000);
   });
+  // Re-measure when app becomes visible
+  var root = document.getElementById('appRoot');
+  if (root && window.MutationObserver) {
+    new MutationObserver(measure).observe(root, { attributes: true, attributeFilter: ['class'] });
+  }
 })();
