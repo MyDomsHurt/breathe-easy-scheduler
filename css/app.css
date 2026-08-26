@@ -328,6 +328,28 @@ main {
 #modal {
   z-index: 200;
 }
+.van-copy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 12px;
+  border: 0;
+  border-radius: 12px;
+  background: #059669;
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.van-copy-btn:active {
+  transform: scale(0.98);
+}
+.van-copy-btn.is-copied {
+  background: #047857;
+}
 #emptyActions button {
   min-height: 44px;
 }

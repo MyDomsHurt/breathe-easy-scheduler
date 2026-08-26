@@ -70,6 +70,64 @@ function jobSortMinutes(j) {
   return timeToMinutes(j.client_name || '');
 }
 
+function ordinal(n) {
+  const v = n % 100;
+  if (v >= 11 && v <= 13) return n + 'th';
+  const last = n % 10;
+  if (last === 1) return n + 'st';
+  if (last === 2) return n + 'nd';
+  if (last === 3) return n + 'rd';
+  return n + 'th';
+}
+
+function sameDayTeamJobs(job) {
+  const list = (typeof allJobs !== 'undefined' && allJobs.length ? allJobs : []).filter(function (x) {
+    return x.date === job.date && x.team_lead === job.team_lead;
+  });
+  list.sort(function (a, b) {
+    const dt = jobSortMinutes(a) - jobSortMinutes(b);
+    if (dt !== 0) return dt;
+    return String(a.job_id || '').localeCompare(String(b.job_id || ''));
+  });
+  return list;
+}
+
+function vanRequestText(job) {
+  const dayJobs = sameDayTeamJobs(job);
+  let idx = dayJobs.findIndex(function (x) { return x.job_id === job.job_id; });
+  if (idx < 0) idx = 0;
+  const n = idx + 1;
+  const team = job.team_lead || '';
+  const name = job.client_name || '';
+  const next = dayJobs[idx + 1];
+  if (next) {
+    return 'Team ' + team + ' requesting van from ' + ordinal(n) + ' Job (' + name + ') to ' + ordinal(n + 1) + ' job (' + (next.client_name || '') + ').\n\nPlease pickup at___';
+  }
+  return 'Team ' + team + ' requesting van after ' + ordinal(n) + ' Job (' + name + ').\nPlease pickup at___';
+}
+
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise(function (resolve, reject) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      resolve();
+    } catch (err) {
+      reject(err);
+    }
+    document.body.removeChild(ta);
+  });
+}
+
 function displayTime(j) {
   if (j.time) return j.time;
   const s = String(j.client_name || '');
@@ -654,7 +712,29 @@ function openModal(j) {
   ];
   document.getElementById('modalBody').innerHTML = rows.map(function(pair) {
     return '<div><dt class="text-xs font-medium text-slate-400 uppercase tracking-wide">' + pair[0] + '</dt><dd class="mt-0.5 text-slate-800 break-words">' + pair[1] + '</dd></div>';
-  }).join('');
+  }).join('') +
+    '<button type="button" id="copyVanBtn" class="van-copy-btn">Copy van request</button>';
+  const vanBtn = document.getElementById('copyVanBtn');
+  if (vanBtn) {
+    const vanText = vanRequestText(j);
+    vanBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      copyText(vanText).then(function () {
+        vanBtn.textContent = 'Copied';
+        vanBtn.classList.add('is-copied');
+        setTimeout(function () {
+          vanBtn.textContent = 'Copy van request';
+          vanBtn.classList.remove('is-copied');
+        }, 1600);
+      }).catch(function () {
+        vanBtn.textContent = 'Copy failed';
+        setTimeout(function () {
+          vanBtn.textContent = 'Copy van request';
+        }, 1600);
+      });
+    });
+  }
   document.getElementById('modal').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
 }
