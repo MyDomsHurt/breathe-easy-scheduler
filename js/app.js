@@ -100,10 +100,11 @@ function vanRequestText(job) {
   const team = job.team_lead || '';
   const name = job.client_name || '';
   const next = dayJobs[idx + 1];
-  if (next) {
-    return 'Team ' + team + ' requesting van from ' + ordinal(n) + ' Job (' + name + ') to ' + ordinal(n + 1) + ' job (' + (next.client_name || '') + ').\n\nPlease pickup at___';
-  }
-  return 'Team ' + team + ' requesting van from ' + ordinal(n) + ' Job (' + name + ') back to the office.\n\nPlease pickup at___';
+  const dest = next
+    ? ordinal(n + 1) + ' job: ' + (next.client_name || '')
+    : 'Office';
+  return '*Team ' + team + '*\nVan request\n\n' +
+    ordinal(n) + ' job: ' + name + '\n\u2192 ' + dest + '\n\nPickup:\n';
 }
 
 function copyText(text) {
