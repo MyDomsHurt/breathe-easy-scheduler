@@ -4,16 +4,16 @@ let allJobs = [];
 let filtered = [];
 let currentFilters = {
   month: 'all',
-  team: 'Josh',
+  team: 'Matthew',
   type: 'all',
   date: 'all',
-  range: 'today',
+  range: 'this_week',
   search: ''
 };
 let viewMode = 'date';
 let compactMode = localStorage.getItem('be-compact') === '1';
 
-const TEAMS = ['Josh', 'Matthew', 'Tiago', 'Nick', 'Alun', 'Iggi'];
+const TEAMS = ['Matthew', 'Tiago', 'Nick', 'Alun', 'Iggi', 'Josh'];
 const TEAM_COLORS = {
   Josh: 'bg-violet-100 text-violet-800',
   Matthew: 'bg-sky-100 text-sky-800',
@@ -271,7 +271,7 @@ function applyRoleUI() {
   currentFilters.date = 'all';
   currentFilters.search = '';
   currentFilters.type = 'all';
-  if (!currentFilters.team || currentFilters.team === 'all') currentFilters.team = 'Josh';
+  if (!currentFilters.team || currentFilters.team === 'all') currentFilters.team = 'Matthew';
   buildTeamButtons();
   applyCompactUI();
   syncHeaderHeight();
@@ -595,6 +595,6 @@ function esc(str) {
 
 window.onAuthReady = function() {
   viewMode = 'date';
-  if (!currentFilters.team || currentFilters.team === 'all') currentFilters.team = 'Josh';
+  if (!currentFilters.team || currentFilters.team === 'all') currentFilters.team = 'Matthew';
   init();
 };
