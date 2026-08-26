@@ -13,15 +13,17 @@ window.FIREBASE_CONFIG = {
 
 // ============================================================
 // Allowlist – emails that can access the app
-// office  = full access (Office + Technician toggle)
-// tech    = Technician view only (no Office, no toggle)
+// (live allowlist is in js/auth.js and dashboard/auth.js)
 // ============================================================
-window.ALLOWLIST = {
-  office: [
-    // e.g. "jeff@breathe-easy.hk",
-  ],
-  tech: [
-    // e.g. "matthew@breathe-easy.hk",
-    // e.g. "tiago@breathe-easy.hk",
-  ]
-};
+window.ALLOWLIST = [
+  "iamruby112@gmail.com",
+  "iggi.king@gmail.com",
+  "itstartswiththemind@gmail.com",
+  "jefflamb1992@gmail.com",
+  "joshua@breathe-easyhk.com",
+  "matthewgross2001@gmail.com",
+  "n.marie.lamb@gmail.com",
+  "neltrestium@gmail.com",
+  "sudor23@gmail.com",
+  "tiagogiri334@gmail.com"
+];
