@@ -1,10 +1,11 @@
-/* Compact toggle styling for universal light shell */
+/* Compact | Detailed toggle styling for universal light shell */
 (function () {
   function paint() {
-    var compact = document.getElementById('compactToggle');
-    if (compact) {
-      compact.classList.toggle('be-on', document.body.classList.contains('compact'));
-    }
+    var compact = document.getElementById('densityCompact');
+    var detailed = document.getElementById('densityDetailed');
+    var isCompact = document.body.classList.contains('compact');
+    if (compact) compact.classList.toggle('be-on', isCompact);
+    if (detailed) detailed.classList.toggle('be-on', !isCompact);
   }
   var obs = new MutationObserver(function (muts) {
     for (var i = 0; i < muts.length; i++) {
@@ -17,7 +18,7 @@
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t) return;
-    if (t.id === 'compactToggle') {
+    if (t.id === 'densityCompact' || t.id === 'densityDetailed' || (t.closest && t.closest('#densityToggle'))) {
       setTimeout(paint, 0);
       setTimeout(paint, 50);
     }

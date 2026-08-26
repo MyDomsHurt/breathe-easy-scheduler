@@ -64,6 +64,9 @@ body.compact .max-w-7xl.mx-auto.px-4.py-5 {
 #techTeamBar .team-btn {
   white-space: nowrap;
 }
+#densityToggle {
+  max-width: 100%;
+}
 
 main {
   width: 100% !important;
