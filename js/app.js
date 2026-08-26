@@ -129,6 +129,32 @@ function copyText(text) {
   });
 }
 
+function flashVanBtn(btn, label, restore) {
+  if (!btn) return;
+  btn.textContent = label;
+  btn.classList.add('is-copied');
+  setTimeout(function () {
+    btn.textContent = restore;
+    btn.classList.remove('is-copied');
+  }, 1600);
+}
+
+function getGpsPin() {
+  return new Promise(function (resolve, reject) {
+    if (!navigator.geolocation) {
+      reject(new Error('no geolocation'));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      function (err) { reject(err); },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 20000 }
+    );
+  });
+}
+
 function displayTime(j) {
   if (j.time) return j.time;
   const s = String(j.client_name || '');
@@ -714,25 +740,43 @@ function openModal(j) {
   document.getElementById('modalBody').innerHTML = rows.map(function(pair) {
     return '<div><dt class="text-xs font-medium text-slate-400 uppercase tracking-wide">' + pair[0] + '</dt><dd class="mt-0.5 text-slate-800 break-words">' + pair[1] + '</dd></div>';
   }).join('') +
-    '<button type="button" id="copyVanBtn" class="van-copy-btn">Copy van request</button>';
+    '<div class="van-copy-row">' +
+      '<button type="button" id="copyVanBtn" class="van-copy-btn">Copy van request</button>' +
+      '<button type="button" id="copyVanPinBtn" class="van-copy-btn">Copy van request + pin</button>' +
+    '</div>';
+  const vanText = vanRequestText(j);
   const vanBtn = document.getElementById('copyVanBtn');
+  const pinBtn = document.getElementById('copyVanPinBtn');
   if (vanBtn) {
-    const vanText = vanRequestText(j);
     vanBtn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       copyText(vanText).then(function () {
-        vanBtn.textContent = 'Copied';
-        vanBtn.classList.add('is-copied');
-        setTimeout(function () {
-          vanBtn.textContent = 'Copy van request';
-          vanBtn.classList.remove('is-copied');
-        }, 1600);
+        flashVanBtn(vanBtn, 'Copied', 'Copy van request');
       }).catch(function () {
-        vanBtn.textContent = 'Copy failed';
-        setTimeout(function () {
-          vanBtn.textContent = 'Copy van request';
-        }, 1600);
+        flashVanBtn(vanBtn, 'Copy failed', 'Copy van request');
+      });
+    });
+  }
+  if (pinBtn) {
+    pinBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (pinBtn.dataset.busy) return;
+      pinBtn.dataset.busy = '1';
+      getGpsPin().then(function (loc) {
+        const pin = 'https://maps.google.com/?q=' + loc.lat.toFixed(6) + ',' + loc.lng.toFixed(6);
+        return copyText(vanText + pin + '\n').then(function () {
+          flashVanBtn(pinBtn, 'Copied', 'Copy van request + pin');
+        });
+      }).catch(function () {
+        return copyText(vanText).then(function () {
+          flashVanBtn(pinBtn, 'Copied (no pin)', 'Copy van request + pin');
+        }).catch(function () {
+          flashVanBtn(pinBtn, 'Copy failed', 'Copy van request + pin');
+        });
+      }).then(function () {
+        delete pinBtn.dataset.busy;
       });
     });
   }

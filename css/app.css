@@ -328,13 +328,19 @@ main {
 #modal {
   z-index: 200;
 }
+.van-copy-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
 .van-copy-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   min-height: 44px;
-  margin-top: 12px;
+  margin: 0;
   border: 0;
   border-radius: 12px;
   background: #059669;
