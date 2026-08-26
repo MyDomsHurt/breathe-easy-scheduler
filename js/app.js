@@ -539,7 +539,7 @@ function jobCard(j) {
   const isPaid = jobIsPaid(j);
   const rightBadge = isPaid
     ? '<span class="text-[10px] font-bold tracking-wide px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">PAID</span>'
-    : '<span class="text-[10px] font-bold tracking-wide px-1.5 py-0.5 rounded bg-rose-100 text-rose-800">UNPAID</span>';
+    : '';
   const units = j.acs
     ? '<span class="inline-flex items-center text-[11px] font-semibold bg-white/80 border border-slate-200 text-slate-800 px-1.5 py-0.5 rounded">' + esc(j.acs) + '</span>'
     : '';
@@ -568,18 +568,6 @@ function jobCard(j) {
   }
 
   const showTeam = currentFilters.team === 'all';
-
-  const tel = j.mobile ? String(j.mobile).replace(/[^\d+]/g, '') : '';
-  const callBtn = tel
-    ? '<a href="tel:' + esc(tel) + '" class="card-action card-action-call">Call</a>'
-    : '';
-  const mapsBtn = j.address
-    ? '<a href="https://maps.google.com/?q=' + encodeURIComponent(cleanAddressForMaps(j.address)) + '" target="_blank" rel="noopener noreferrer" class="card-action card-action-maps">Maps</a>'
-    : '';
-  const actionsRow = (callBtn || mapsBtn)
-    ? '<div class="card-actions live-actions" data-stop="1">' + callBtn + mapsBtn + '</div>'
-    : '';
-
   const unitsBit = j.acs
     ? '<span class="live-units">' + esc(j.acs) + '</span>'
     : '';
@@ -599,7 +587,6 @@ function jobCard(j) {
     '</div>' +
     addressBlock +
     notesBlock +
-    actionsRow +
   '</article>';
 }
 
