@@ -1,0 +1,35 @@
+name: Sync live August jobs
+on:
+  workflow_dispatch:
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download job files
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          curl -fsSL -o data/jobs.json https://files.catbox.moe/jfogst.json
+          curl -fsSL -o data/jobs_part_1.json https://files.catbox.moe/139th2.json
+          curl -fsSL -o data/jobs_part_2.json https://files.catbox.moe/x9q043.json
+          curl -fsSL -o data/jobs_part_4.json https://files.catbox.moe/g24bsv.json
+          curl -fsSL -o data/jobs_part_5.json https://files.catbox.moe/vqs4rt.json
+          python3 - <<'PY'
+          import json, pathlib
+          jobs = json.loads(pathlib.Path('data/jobs.json').read_text())
+          names = [j['client_name'] for j in jobs if j['date']=='2026-08-26' and j['team_lead']=='Matthew']
+          wanted = ['Sarah Vanderlinden','Christopher Cheng','Ryan Zughbi','Dianna Underwood']
+          missing = [w for w in wanted if w not in names]
+          assert not missing, missing
+          print('ok', len(jobs), names)
+          PY
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/jobs.json data/jobs_part_1.json data/jobs_part_2.json data/jobs_part_4.json data/jobs_part_5.json
+          git commit -m "Sync live August weekly schedule into static data"
+          git push
