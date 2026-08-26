@@ -11,7 +11,7 @@ let currentFilters = {
   search: ''
 };
 let viewMode = 'date';
-let compactMode = localStorage.getItem('be-compact') === '1';
+let compactMode = localStorage.getItem('be-density') !== 'detailed';
 
 const TEAMS = ['Matthew', 'Tiago', 'Nick', 'Alun', 'Iggi', 'Josh'];
 const TEAM_COLORS = {
@@ -220,16 +220,17 @@ function bindEvents() {
       applyFilters();
     });
   });
-  const compactBtn = document.getElementById('compactToggle');
-  if (compactBtn) {
-    compactBtn.addEventListener('click', () => {
-      compactMode = !compactMode;
-      localStorage.setItem('be-compact', compactMode ? '1' : '0');
-      applyCompactUI();
-      render();
-    });
+  function setDensity(isCompact) {
+    compactMode = isCompact;
+    localStorage.setItem('be-density', compactMode ? 'compact' : 'detailed');
     applyCompactUI();
+    render();
   }
+  const densityCompact = document.getElementById('densityCompact');
+  const densityDetailed = document.getElementById('densityDetailed');
+  if (densityCompact) densityCompact.addEventListener('click', () => setDensity(true));
+  if (densityDetailed) densityDetailed.addEventListener('click', () => setDensity(false));
+  applyCompactUI();
   window.addEventListener('resize', syncHeaderHeight);
   syncHeaderHeight();
 }
@@ -250,15 +251,15 @@ function syncHeaderHeight() {
 
 function applyCompactUI() {
   document.body.classList.toggle('compact', compactMode);
-  const btn = document.getElementById('compactToggle');
-  if (!btn) return;
-  if (compactMode) {
-    btn.classList.remove('bg-white/10', 'text-white', 'border-white/30');
-    btn.classList.add('bg-white', 'text-brand-800', 'border-white');
-  } else {
-    btn.classList.add('bg-white/10', 'text-white', 'border-white/30');
-    btn.classList.remove('bg-white', 'text-brand-800', 'border-white');
+  function paint(btn, on) {
+    if (!btn) return;
+    btn.classList.toggle('bg-brand-600', on);
+    btn.classList.toggle('text-white', on);
+    btn.classList.toggle('bg-slate-100', !on);
+    btn.classList.toggle('text-slate-700', !on);
   }
+  paint(document.getElementById('densityCompact'), compactMode);
+  paint(document.getElementById('densityDetailed'), !compactMode);
 }
 
 function applyRoleUI() {
@@ -409,7 +410,7 @@ function renderByDate(container) {
   const dates = Object.keys(groups).sort();
   const gridCls = compactMode
     ? 'grid grid-cols-2 gap-1.5'
-    : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3';
+    : 'grid gap-2';
   container.innerHTML = dates.map(date => {
     const jobs = groups[date].slice().sort((a, b) => jobSortMinutes(a) - jobSortMinutes(b));
     const returns = jobs.filter(j => j.is_return).length;
@@ -437,7 +438,7 @@ function renderByTeam(container) {
     return '<section><div class="flex items-center justify-between mb-2"><h3 class="font-semibold"><span class="inline-block px-2 py-0.5 rounded ' +
       (TEAM_COLORS[team] || 'bg-slate-100') + ' team-chip mr-1">' + team + '</span><span class="text-slate-400 font-normal text-sm">' +
       jobs.length + ' jobs' + (returns ? ' · ' + returns + ' returns' : '') + '</span></h3>' +
-      '</div><div class="' + (compactMode ? 'grid grid-cols-2 gap-1.5' : 'grid gap-2 sm:grid-cols-2 xl:grid-cols-3') + '">' + jobs.map(jobCard).join('') + '</div></section>';
+      '</div><div class="' + (compactMode ? 'grid grid-cols-2 gap-1.5' : 'grid gap-2') + '">' + jobs.map(jobCard).join('') + '</div></section>';
   }).join('');
   bindCardClicks();
 }
@@ -496,7 +497,7 @@ function jobCard(j) {
       esc(j.address) + (j.district ? ' <span class="opacity-70 text-[11px] font-semibold">' + esc(j.district) + '</span>' : '') + '</div>'
     : '';
   const notesBlock = j.notes
-    ? '<p class="text-[12px] text-slate-600 mt-2 leading-snug line-clamp-3 border-l-2 border-slate-200 pl-2 break-words" style="overflow-wrap:anywhere">' + esc(j.notes) + '</p>'
+    ? '<p class="text-[13px] text-slate-600 mt-2 leading-snug line-clamp-6 border-l-2 border-slate-200 pl-2 break-words" style="overflow-wrap:anywhere">' + esc(j.notes) + '</p>'
     : '';
   return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3.5 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
     '<div class="flex items-start justify-between gap-2">' +
@@ -590,7 +591,11 @@ function formatMoney(n) {
 
 function esc(str) {
   if (str == null) return '';
-  return String(str).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
+  return String(str)
+    .replace(/&/g, '\u0026amp;')
+    .replace(/</g, '\u0026lt;')
+    .replace(/>/g, '\u0026gt;')
+    .replace(/"/g, '\u0026quot;');
 }
 
 window.onAuthReady = function() {
