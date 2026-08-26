@@ -81,22 +81,24 @@ main {
 #jobsContainer .grid {
   max-width: 100%;
   min-width: 0;
-  overflow-x: hidden;
+}
+#jobsContainer .grid {
+  overflow-x: clip;
 }
 
+.day-section {
+  position: relative;
+  overflow: visible;
+  margin-bottom: 1.1rem;
+}
 .day-header-sticky {
   position: sticky;
   top: var(--day-sticky-top, calc(var(--app-header-h, 56px) + var(--tech-bar-h, 0px)));
-  z-index: 30;
-  background: rgba(248, 250, 252, 0.96);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  z-index: 2;
+  background: #f8fafc;
   padding: 0.4rem 0.5rem;
   margin: 0 -0.5rem 0.35rem;
   border-bottom: 1px solid #e2e8f0;
-}
-.day-section {
-  margin-bottom: 1.1rem;
 }
 .day-section.day-past {
   opacity: 0.58;
