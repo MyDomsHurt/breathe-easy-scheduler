@@ -60,13 +60,37 @@ function displayTime(j) {
   if (j.time) return j.time;
   const s = String(j.client_name || '');
   const m = s.match(/(\d{1,2}(?:[.:]\d{2})?\s*(?:am|pm)?)/i);
-  return m ? m[1].replace(/\s+/g, '') : '—';
+  return m ? m[1].replace(/\s+/g, '') : '\u2014';
 }
 
 function jobMonth(j) {
   if (j.month != null && j.month !== '') return Number(j.month);
   if (j.date) return Number(String(j.date).slice(5, 7));
   return null;
+}
+
+function toISODate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+
+function todayISO() {
+  const now = new Date();
+  return toISODate(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+}
+
+function tomorrowISO() {
+  const now = new Date();
+  return toISODate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
+}
+
+function formatDayHeading(iso) {
+  const label = formatDate(iso);
+  if (iso === todayISO()) return '<span class="day-flag day-flag-today">Today</span> ' + label;
+  if (iso === tomorrowISO()) return '<span class="day-flag day-flag-tomorrow">Tomorrow</span> ' + label;
+  return label;
 }
 
 async function init() {
@@ -112,7 +136,7 @@ function buildTeamButtons() {
       const btn = document.createElement('button');
       btn.dataset.team = t;
       const isActive = currentFilters.team === t;
-      btn.className = 'team-btn shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium ' +
+      btn.className = 'team-btn shrink-0 px-2.5 py-1 rounded-lg text-[13px] font-medium ' +
         (isActive ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200');
       btn.textContent = t === 'all' ? 'All' : t;
       container.appendChild(btn);
@@ -206,20 +230,15 @@ function bindEvents() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
   applyRoleUI();
   document.querySelectorAll('.range-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentFilters.range = btn.dataset.range;
-      currentFilters.date = 'all';
-      const dateSelect = document.getElementById('dateSelect');
-      if (dateSelect) dateSelect.value = 'all';
-      document.querySelectorAll('.range-btn').forEach(b => {
-        b.classList.remove('bg-brand-600', 'text-white');
-        b.classList.add('bg-slate-100', 'text-slate-700');
-      });
-      btn.classList.remove('bg-slate-100', 'text-slate-700');
-      btn.classList.add('bg-brand-600', 'text-white');
-      applyFilters();
-    });
+    btn.addEventListener('click', () => selectRange(btn.dataset.range));
   });
+  const emptyActions = document.getElementById('emptyActions');
+  if (emptyActions) {
+    emptyActions.addEventListener('click', (e) => {
+      const jump = e.target.closest('[data-jump-range]');
+      if (jump) selectRange(jump.dataset.jumpRange);
+    });
+  }
   function setDensity(isCompact) {
     compactMode = isCompact;
     localStorage.setItem('be-density', compactMode ? 'compact' : 'detailed');
@@ -247,6 +266,21 @@ function syncHeaderHeight() {
   }
   document.documentElement.style.setProperty('--tech-bar-h', barH + 'px');
   document.documentElement.style.setProperty('--day-sticky-top', (h + barH) + 'px');
+}
+
+function selectRange(range) {
+  currentFilters.range = range;
+  currentFilters.date = 'all';
+  const dateSelect = document.getElementById('dateSelect');
+  if (dateSelect) dateSelect.value = 'all';
+  document.querySelectorAll('.range-btn').forEach(b => {
+    const on = b.dataset.range === range;
+    b.classList.toggle('bg-brand-600', on);
+    b.classList.toggle('text-white', on);
+    b.classList.toggle('bg-slate-100', !on);
+    b.classList.toggle('text-slate-700', !on);
+  });
+  applyFilters();
 }
 
 function applyCompactUI() {
@@ -290,14 +324,8 @@ function setActive(selector, activeBtn) {
 function getRangeBounds(range) {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const toISO = (d) => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return y + '-' + m + '-' + day;
-  };
   if (range === 'today') {
-    const iso = toISO(today);
+    const iso = toISODate(today);
     return { start: iso, end: iso };
   }
   if (range === 'this_week') {
@@ -307,7 +335,7 @@ function getRangeBounds(range) {
     monday.setDate(today.getDate() + mondayOffset);
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
-    return { start: toISO(monday), end: toISO(sunday) };
+    return { start: toISODate(monday), end: toISODate(sunday) };
   }
   if (range === 'next_week') {
     const day = today.getDay();
@@ -318,7 +346,7 @@ function getRangeBounds(range) {
     nextMonday.setDate(thisMonday.getDate() + 7);
     const nextSunday = new Date(nextMonday);
     nextSunday.setDate(nextMonday.getDate() + 6);
-    return { start: toISO(nextMonday), end: toISO(nextSunday) };
+    return { start: toISODate(nextMonday), end: toISODate(nextSunday) };
   }
   return null;
 }
@@ -391,7 +419,27 @@ function render() {
   if (filtered.length === 0) {
     container.innerHTML = '';
     empty.classList.remove('hidden');
-    document.getElementById('viewTitle').textContent = 'No matching jobs';
+    const title = document.getElementById('viewTitle');
+    if (title) title.textContent = 'No matching jobs';
+    const msg = document.getElementById('emptyMessage');
+    const actions = document.getElementById('emptyActions');
+    const team = currentFilters.team && currentFilters.team !== 'all' ? currentFilters.team : 'this team';
+    let jumps = [];
+    if (currentFilters.range === 'today') {
+      if (msg) msg.textContent = 'No jobs today for ' + team + '.';
+      jumps = [['this_week', 'See this week'], ['next_week', 'See next week']];
+    } else if (currentFilters.range === 'next_week') {
+      if (msg) msg.textContent = 'No jobs next week for ' + team + '.';
+      jumps = [['this_week', 'See this week'], ['today', 'See today']];
+    } else {
+      if (msg) msg.textContent = 'No jobs this week for ' + team + '.';
+      jumps = [['next_week', 'See next week'], ['today', 'See today']];
+    }
+    if (actions) {
+      actions.innerHTML = jumps.map(function (pair) {
+        return '<button type="button" data-jump-range="' + pair[0] + '" class="w-full px-4 py-3 rounded-xl text-sm font-semibold bg-brand-600 text-white active:scale-95">' + pair[1] + '</button>';
+      }).join('');
+    }
     return;
   }
   empty.classList.add('hidden');
@@ -411,14 +459,16 @@ function renderByDate(container) {
   const gridCls = compactMode
     ? 'grid grid-cols-2 gap-1.5'
     : 'grid gap-2';
+  const today = todayISO();
   container.innerHTML = dates.map(date => {
     const jobs = groups[date].slice().sort((a, b) => jobSortMinutes(a) - jobSortMinutes(b));
     const returns = jobs.filter(j => j.is_return).length;
-    return '<section class="day-section">' +
-      '<div class="day-header-sticky flex items-center justify-between mb-2 bg-slate-50/95 backdrop-blur py-1.5 z-10">' +
+    const kind = date === today ? 'today' : (date === tomorrowISO() ? 'tomorrow' : (date < today ? 'past' : 'upcoming'));
+    return '<section class="day-section day-' + kind + '">' +
+      '<div class="day-header-sticky flex items-center justify-between">' +
         '<h3 class="font-semibold text-brand-800">' +
-          formatDate(date) + '<span class="text-slate-400 font-normal text-sm ml-2">' + jobs.length + ' jobs</span>' +
-          (returns ? '<span class="ml-1 text-amber-600 text-sm">· ' + returns + ' return' + (returns > 1 ? 's' : '') + '</span>' : '') +
+          formatDayHeading(date) + '<span class="text-slate-400 font-normal text-sm ml-2">' + jobs.length + ' job' + (jobs.length !== 1 ? 's' : '') + '</span>' +
+          (returns ? '<span class="ml-1 text-amber-600 text-sm">\u00b7 ' + returns + ' return' + (returns > 1 ? 's' : '') + '</span>' : '') +
         '</h3>' +
       '</div>' +
       '<div class="' + gridCls + '">' + jobs.map(jobCard).join('') + '</div></section>';
@@ -437,7 +487,7 @@ function renderByTeam(container) {
     const returns = jobs.filter(j => j.is_return).length;
     return '<section><div class="flex items-center justify-between mb-2"><h3 class="font-semibold"><span class="inline-block px-2 py-0.5 rounded ' +
       (TEAM_COLORS[team] || 'bg-slate-100') + ' team-chip mr-1">' + team + '</span><span class="text-slate-400 font-normal text-sm">' +
-      jobs.length + ' jobs' + (returns ? ' · ' + returns + ' returns' : '') + '</span></h3>' +
+      jobs.length + ' jobs' + (returns ? ' \u00b7 ' + returns + ' returns' : '') + '</span></h3>' +
       '</div><div class="' + (compactMode ? 'grid grid-cols-2 gap-1.5' : 'grid gap-2') + '">' + jobs.map(jobCard).join('') + '</div></section>';
   }).join('');
   bindCardClicks();
@@ -477,38 +527,37 @@ function jobCard(j) {
   }
 
   const showTeam = currentFilters.team === 'all';
-  const teamChip = showTeam
-    ? '<span class="text-[10px] font-medium px-1.5 py-0.5 rounded ' + (TEAM_COLORS[j.team_lead] || 'bg-slate-100') + '">' + esc(j.team_lead) + '</span>'
-    : '';
 
   const tel = j.mobile ? String(j.mobile).replace(/[^\d+]/g, '') : '';
   const callBtn = tel
-    ? '<a href="tel:' + esc(tel) + '" class="card-action card-action-call flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 active:bg-emerald-100">Call</a>'
+    ? '<a href="tel:' + esc(tel) + '" class="card-action card-action-call flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl text-sm font-bold bg-emerald-50 border border-emerald-200 text-emerald-800 active:bg-emerald-100">Call</a>'
     : '';
   const mapsBtn = j.address
-    ? '<a href="https://maps.google.com/?q=' + encodeURIComponent(cleanAddressForMaps(j.address)) + '" target="_blank" rel="noopener noreferrer" class="card-action card-action-maps flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-sky-50 border border-sky-200 text-sky-800 active:bg-sky-100">Maps</a>'
+    ? '<a href="https://maps.google.com/?q=' + encodeURIComponent(cleanAddressForMaps(j.address)) + '" target="_blank" rel="noopener noreferrer" class="card-action card-action-maps flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl text-sm font-bold bg-sky-50 border border-sky-200 text-sky-800 active:bg-sky-100">Maps</a>'
     : '';
   const actionsRow = (callBtn || mapsBtn)
     ? '<div class="card-actions flex gap-2 mt-3" data-stop="1">' + callBtn + mapsBtn + '</div>'
     : '';
 
   const addressBlock = j.address
-    ? '<div class="mt-2.5 px-3 py-2 rounded-lg border text-[13px] leading-snug font-medium break-words" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + ';overflow-wrap:anywhere">' +
+    ? '<div class="mt-2 px-3 py-2.5 rounded-lg border text-[14px] leading-snug font-semibold break-words" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + ';overflow-wrap:anywhere">' +
       esc(j.address) + (j.district ? ' <span class="opacity-70 text-[11px] font-semibold">' + esc(j.district) + '</span>' : '') + '</div>'
+    : '';
+  const acsBlock = j.acs
+    ? '<div class="mt-2 px-3 py-2 rounded-lg bg-brand-50 border border-brand-200 text-brand-900 text-[15px] font-extrabold tracking-wide">' + esc(j.acs) + '</div>'
     : '';
   const notesBlock = j.notes
     ? '<p class="text-[13px] text-slate-600 mt-2 leading-snug line-clamp-6 border-l-2 border-slate-200 pl-2 break-words" style="overflow-wrap:anywhere">' + esc(j.notes) + '</p>'
     : '';
-  return '<article class="job-card bg-white border border-slate-200 rounded-xl p-3.5 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
+  return '<article class="job-card job-card-detailed bg-white border border-slate-200 rounded-xl p-3.5 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
     '<div class="flex items-start justify-between gap-2">' +
-      '<div class="min-w-0 flex-1">' +
-        '<p class="text-[15px] font-bold text-slate-800 leading-tight">' + esc(displayTime(j)) + '</p>' +
-        '<p class="text-[14px] font-semibold text-slate-700 mt-0.5 truncate">' + esc(j.client_name) + '</p>' +
-      '</div>' +
+      '<p class="text-[22px] font-extrabold text-slate-900 leading-none tracking-tight">' + esc(displayTime(j)) + '</p>' +
       '<div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div>' +
     '</div>' +
-    addressBlock + notesBlock +
-    '<div class="flex items-center gap-1.5 flex-wrap mt-2.5">' + teamChip + units + '</div>' +
+    '<p class="text-[13px] font-medium text-slate-500 mt-1.5 truncate">' + esc(j.client_name) + (showTeam ? ' \u00b7 ' + esc(j.team_lead) : '') + '</p>' +
+    addressBlock +
+    acsBlock +
+    notesBlock +
     actionsRow +
   '</article>';
 }
@@ -538,12 +587,16 @@ function cleanAddressForMaps(raw) {
 
 function openModal(j) {
   document.getElementById('modalTitle').textContent = j.client_name;
-  document.getElementById('modalSub').textContent = formatDate(j.date) + ' · ' + displayTime(j) + ' · ' + j.team_lead;
+  document.getElementById('modalSub').textContent = formatDate(j.date) + ' \u00b7 ' + displayTime(j) + ' \u00b7 ' + j.team_lead;
   const mapsUrl = j.address ? 'https://maps.google.com/?q=' + encodeURIComponent(cleanAddressForMaps(j.address)) : null;
   const mapsLink = mapsUrl
-    ? '<a href="' + mapsUrl + '" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 mt-2 w-full sm:w-auto px-3 py-2.5 rounded-lg bg-brand-50 border border-brand-200 text-brand-700 font-medium text-sm active:bg-brand-100 hover:bg-brand-100 transition-colors">Open in Google Maps</a>'
+    ? '<a href="' + mapsUrl + '" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 mt-2 w-full px-3 py-3 rounded-xl bg-sky-50 border border-sky-200 text-sky-800 font-bold text-sm active:bg-sky-100">Open in Maps</a>'
     : '';
-  const addressHtml = j.address ? '<div class="text-slate-800 break-words">' + esc(j.address) + '</div>' + mapsLink : '—';
+  const addressHtml = j.address ? '<div class="text-slate-800 break-words">' + esc(j.address) + '</div>' + mapsLink : '\u2014';
+  const tel = j.mobile ? String(j.mobile).replace(/[^\d+]/g, '') : '';
+  const mobileHtml = tel
+    ? '<a href="tel:' + esc(tel) + '" class="inline-flex items-center justify-center min-h-[44px] font-semibold text-emerald-800">' + esc(j.mobile) + '</a>'
+    : (j.mobile || '\u2014');
   const isPaid = !!(j.receipt && String(j.receipt).trim());
   const paidStatus = isPaid
     ? '<span class="inline-flex items-center gap-1.5 text-emerald-700 font-semibold">PAID</span>'
@@ -551,12 +604,12 @@ function openModal(j) {
   const rows = [
     ['Type', j.is_return ? '<span class="text-amber-600 font-semibold">Return</span>' : 'Full clean'],
     ['Team', j.team_lead + (j.team_members ? ' (' + j.team_members + ')' : '')],
-    ['ACs / Units', j.acs || '— (empty → treated as return)'],
+    ['ACs / Units', j.acs || '\u2014 (empty \u2192 treated as return)'],
     ['Payment Status', paidStatus],
-    ['Mobile', j.mobile || '—'],
+    ['Mobile', mobileHtml],
     ['Address', addressHtml],
-    ['District', j.district || '—'],
-    ['Notes', j.notes || '—'],
+    ['District', j.district || '\u2014'],
+    ['Notes', j.notes || '\u2014'],
     ['Job ID', j.job_id]
   ];
   document.getElementById('modalBody').innerHTML = rows.map(function(pair) {
@@ -580,7 +633,7 @@ function groupBy(arr, keyFn) {
 }
 
 function formatDate(iso) {
-  if (!iso) return '—';
+  if (!iso) return '\u2014';
   const d = new Date(iso + 'T00:00:00');
   return d.toLocaleDateString('en-HK', { weekday: 'short', day: 'numeric', month: 'short' });
 }
