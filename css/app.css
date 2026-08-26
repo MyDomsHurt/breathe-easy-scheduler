@@ -128,9 +128,15 @@ body.compact .max-w-7xl.mx-auto.px-4.py-5 {
   line-height: 1;
   white-space: nowrap;
 }
-.density-seg button.is-on,
-.density-seg button.be-on {
-  background: #0284c7;
+#densityCompact.is-on,
+#densityCompact.be-on {
+  background: #059669;
+  color: #fff;
+  font-weight: 800;
+}
+#densityDetailed.is-on,
+#densityDetailed.be-on {
+  background: #7c3aed;
   color: #fff;
   font-weight: 800;
 }
