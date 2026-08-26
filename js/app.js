@@ -77,6 +77,21 @@ function displayTime(j) {
   return m ? m[1].replace(/\s+/g, '') : '\u2014';
 }
 
+function liveAcsBadges(acs) {
+  if (!acs) return '';
+  const re = /(\d+)\s*([A-Za-z]+)/g;
+  const bits = [];
+  let m;
+  while ((m = re.exec(String(acs))) !== null) {
+    const type = m[2].toUpperCase();
+    const letter = type === 'BEP' ? 'x' : type.charAt(0);
+    const kind = letter === 'S' ? 's' : letter === 'W' ? 'w' : letter === 'B' ? 'b' : 'x';
+    bits.push('<span class="live-u live-u-' + kind + '">' + esc(m[1] + type) + '</span>');
+  }
+  if (!bits.length) return '';
+  return '<span class="live-units">' + bits.join('') + '</span>';
+}
+
 function jobIsPaid(j) {
   const s = j.payment_status != null ? String(j.payment_status).trim().toUpperCase() : '';
   if (s === 'PAID') return true;
@@ -568,9 +583,7 @@ function jobCard(j) {
   }
 
   const showTeam = currentFilters.team === 'all';
-  const unitsBit = j.acs
-    ? '<span class="live-units">' + esc(j.acs) + '</span>'
-    : '';
+  const unitsBit = liveAcsBadges(j.acs);
   const addressBlock = j.address
     ? '<p class="live-addr">' + esc(j.address) + '</p>'
     : '';
