@@ -7,9 +7,23 @@ let currentFilters = {
   team: 'Matthew',
   type: 'all',
   date: 'all',
-  range: 'this_week',
+  range: 'today',
   search: ''
 };
+
+const EMAIL_TO_TEAM = {
+  'matthewgross2001@gmail.com': 'Matthew',
+  'tiagogiri334@gmail.com': 'Tiago',
+  'iggi.king@gmail.com': 'Iggi',
+  'joshua@breathe-easyhk.com': 'Josh',
+  'sudor23@gmail.com': 'Alun',
+  'neltrestium@gmail.com': 'Nick'
+};
+
+function teamFromEmail(email) {
+  const key = String(email || '').toLowerCase().trim();
+  return EMAIL_TO_TEAM[key] || 'Matthew';
+}
 let viewMode = 'date';
 let compactMode = localStorage.getItem('be-density') !== 'detailed';
 
@@ -291,11 +305,7 @@ function syncHeaderHeight() {
   document.documentElement.style.setProperty('--day-sticky-top', (h + barH) + 'px');
 }
 
-function selectRange(range) {
-  currentFilters.range = range;
-  currentFilters.date = 'all';
-  const dateSelect = document.getElementById('dateSelect');
-  if (dateSelect) dateSelect.value = 'all';
+function paintRangeButtons(range) {
   document.querySelectorAll('.range-btn').forEach(b => {
     const on = b.dataset.range === range;
     b.classList.toggle('bg-brand-600', on);
@@ -303,6 +313,14 @@ function selectRange(range) {
     b.classList.toggle('bg-slate-100', !on);
     b.classList.toggle('text-slate-700', !on);
   });
+}
+
+function selectRange(range) {
+  currentFilters.range = range;
+  currentFilters.date = 'all';
+  const dateSelect = document.getElementById('dateSelect');
+  if (dateSelect) dateSelect.value = 'all';
+  paintRangeButtons(range);
   applyFilters();
 }
 
@@ -327,8 +345,10 @@ function applyRoleUI() {
   currentFilters.date = 'all';
   currentFilters.search = '';
   currentFilters.type = 'all';
+  currentFilters.range = 'today';
   if (!currentFilters.team || currentFilters.team === 'all') currentFilters.team = 'Matthew';
   buildTeamButtons();
+  paintRangeButtons(currentFilters.range);
   applyCompactUI();
   syncHeaderHeight();
 }
@@ -672,8 +692,9 @@ function esc(str) {
     .replace(/"/g, '\u0026quot;');
 }
 
-window.onAuthReady = function() {
+window.onAuthReady = function(user) {
   viewMode = 'date';
-  if (!currentFilters.team || currentFilters.team === 'all') currentFilters.team = 'Matthew';
+  currentFilters.team = teamFromEmail(user && user.email);
+  currentFilters.range = 'today';
   init();
 };
