@@ -1,0 +1,26 @@
+name: Ship WhatsApp van-copy format
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  ship:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download files
+        run: |
+          set -euo pipefail
+          curl -fsSL -o js/app.js https://files.catbox.moe/f1gyhi.js
+          curl -fsSL -o index.html https://files.catbox.moe/kd2rzw.html
+          grep -q 'Pickup:' js/app.js
+          grep -q '*Team ' js/app.js
+          grep -q 'app.js?v=9' index.html
+      - name: Commit
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add js/app.js index.html
+          git diff --cached --quiet && echo no-changes && exit 0
+          git commit -m "Format van-request copy for WhatsApp paste"
+          git push
