@@ -103,7 +103,7 @@ function vanRequestText(job) {
   if (next) {
     return 'Team ' + team + ' requesting van from ' + ordinal(n) + ' Job (' + name + ') to ' + ordinal(n + 1) + ' job (' + (next.client_name || '') + ').\n\nPlease pickup at___';
   }
-  return 'Team ' + team + ' requesting van after ' + ordinal(n) + ' Job (' + name + ').\nPlease pickup at___';
+  return 'Team ' + team + ' requesting van from ' + ordinal(n) + ' Job (' + name + ') back to the office.\n\nPlease pickup at___';
 }
 
 function copyText(text) {
