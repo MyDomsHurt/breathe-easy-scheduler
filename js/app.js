@@ -499,7 +499,7 @@ function renderByDate(container) {
   const dates = Object.keys(groups).sort();
   const gridCls = compactMode
     ? 'grid grid-cols-2 gap-1.5'
-    : 'grid gap-2';
+    : 'grid gap-1.5';
   const today = todayISO();
   container.innerHTML = dates.map(date => {
     const jobs = groups[date].slice().sort((a, b) => jobSortMinutes(a) - jobSortMinutes(b));
@@ -529,7 +529,7 @@ function renderByTeam(container) {
     return '<section><div class="flex items-center justify-between mb-2"><h3 class="font-semibold"><span class="inline-block px-2 py-0.5 rounded ' +
       (TEAM_COLORS[team] || 'bg-slate-100') + ' team-chip mr-1">' + team + '</span><span class="text-slate-400 font-normal text-sm">' +
       jobs.length + ' jobs' + (returns ? ' \u00b7 ' + returns + ' returns' : '') + '</span></h3>' +
-      '</div><div class="' + (compactMode ? 'grid grid-cols-2 gap-1.5' : 'grid gap-2') + '">' + jobs.map(jobCard).join('') + '</div></section>';
+      '</div><div class="' + (compactMode ? 'grid grid-cols-2 gap-1.5' : 'grid gap-1.5') + '">' + jobs.map(jobCard).join('') + '</div></section>';
   }).join('');
   bindCardClicks();
 }
@@ -571,33 +571,33 @@ function jobCard(j) {
 
   const tel = j.mobile ? String(j.mobile).replace(/[^\d+]/g, '') : '';
   const callBtn = tel
-    ? '<a href="tel:' + esc(tel) + '" class="card-action card-action-call flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl text-sm font-bold bg-emerald-50 border border-emerald-200 text-emerald-800 active:bg-emerald-100">Call</a>'
+    ? '<a href="tel:' + esc(tel) + '" class="card-action card-action-call">Call</a>'
     : '';
   const mapsBtn = j.address
-    ? '<a href="https://maps.google.com/?q=' + encodeURIComponent(cleanAddressForMaps(j.address)) + '" target="_blank" rel="noopener noreferrer" class="card-action card-action-maps flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl text-sm font-bold bg-sky-50 border border-sky-200 text-sky-800 active:bg-sky-100">Maps</a>'
+    ? '<a href="https://maps.google.com/?q=' + encodeURIComponent(cleanAddressForMaps(j.address)) + '" target="_blank" rel="noopener noreferrer" class="card-action card-action-maps">Maps</a>'
     : '';
   const actionsRow = (callBtn || mapsBtn)
-    ? '<div class="card-actions flex gap-2 mt-3" data-stop="1">' + callBtn + mapsBtn + '</div>'
+    ? '<div class="card-actions live-actions" data-stop="1">' + callBtn + mapsBtn + '</div>'
     : '';
 
-  const addressBlock = j.address
-    ? '<div class="mt-2 px-3 py-2.5 rounded-lg border text-[14px] leading-snug font-semibold break-words" style="background:' + dist.bg + ';border-color:' + dist.border + ';color:' + dist.text + ';overflow-wrap:anywhere">' +
-      esc(j.address) + (j.district ? ' <span class="opacity-70 text-[11px] font-semibold">' + esc(j.district) + '</span>' : '') + '</div>'
+  const unitsBit = j.acs
+    ? '<span class="live-units">' + esc(j.acs) + '</span>'
     : '';
-  const acsBlock = j.acs
-    ? '<div class="mt-2 px-3 py-2 rounded-lg bg-brand-50 border border-brand-200 text-brand-900 text-[15px] font-extrabold tracking-wide">' + esc(j.acs) + '</div>'
+  const addressBlock = j.address
+    ? '<p class="live-addr">' + esc(j.address) + '</p>'
     : '';
   const notesBlock = j.notes
-    ? '<p class="text-[13px] text-slate-600 mt-2 leading-snug line-clamp-6 border-l-2 border-slate-200 pl-2 break-words" style="overflow-wrap:anywhere">' + esc(j.notes) + '</p>'
+    ? '<p class="live-notes">' + esc(j.notes) + '</p>'
     : '';
-  return '<article class="job-card job-card-detailed bg-white border border-slate-200 rounded-xl p-3.5 cursor-pointer hover:shadow-md transition-shadow overflow-hidden max-w-full" data-id="' + esc(j.job_id) + '">' +
-    '<div class="flex items-start justify-between gap-2">' +
-      '<p class="text-[22px] font-extrabold text-slate-900 leading-none tracking-tight">' + esc(displayTime(j)) + '</p>' +
-      '<div class="flex flex-col items-end gap-1 shrink-0">' + returnBadge + rightBadge + '</div>' +
+  return '<article class="job-card job-card-detailed" data-id="' + esc(j.job_id) + '" style="border-left:4px solid ' + dist.border + '">' +
+    '<div class="live-name-row">' +
+      '<p class="live-name">' + esc(j.client_name) + (showTeam ? ' \u00b7 ' + esc(j.team_lead) : '') + '</p>' +
+      '<div class="live-badges">' + returnBadge + rightBadge + '</div>' +
     '</div>' +
-    '<p class="text-[13px] font-medium text-slate-500 mt-1.5 truncate">' + esc(j.client_name) + (showTeam ? ' \u00b7 ' + esc(j.team_lead) : '') + '</p>' +
+    '<div class="live-time-row">' +
+      '<span class="live-time">' + esc(displayTime(j)) + '</span>' + unitsBit +
+    '</div>' +
     addressBlock +
-    acsBlock +
     notesBlock +
     actionsRow +
   '</article>';
