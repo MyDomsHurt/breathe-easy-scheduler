@@ -28,9 +28,8 @@
 #modalBody::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
 @media (max-width: 1023px) {
-  .max-w-7xl.mx-auto.px-4.py-5 { padding-top: 0.5rem !important; padding-bottom: 1rem !important; }
-  main > .flex.items-center.justify-between.mb-4 { margin-bottom: 0.5rem !important; }
-  #viewTitle { font-size: 1rem; }
+  .max-w-7xl.mx-auto.px-4.py-5 { padding-top: 0.4rem !important; padding-bottom: 1rem !important; padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+  main > .flex.items-center.justify-between.mb-4 { display: none !important; }
   .job-card { padding: 0.75rem; }
 }
 
@@ -57,7 +56,7 @@ body.compact .max-w-7xl.mx-auto.px-4.py-5 {
 }
 
 #techRangeBar {
-  top: var(--app-header-h, 57px) !important;
+  top: var(--app-header-h, 56px) !important;
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
   z-index: 40;
 }
@@ -66,6 +65,10 @@ body.compact .max-w-7xl.mx-auto.px-4.py-5 {
 }
 #densityToggle {
   max-width: 100%;
+}
+.range-btn,
+.density-btn {
+  min-height: 36px;
 }
 
 main {
@@ -82,27 +85,60 @@ main {
 }
 
 .day-header-sticky {
-  position: static;
-  top: auto;
-  backdrop-filter: none;
-  background: transparent;
-  padding-top: 0.5rem;
-  padding-bottom: 0.25rem;
-  margin-bottom: 0.35rem;
+  position: sticky;
+  top: var(--day-sticky-top, calc(var(--app-header-h, 56px) + var(--tech-bar-h, 0px)));
+  z-index: 30;
+  background: rgba(248, 250, 252, 0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0.4rem 0.5rem;
+  margin: 0 -0.5rem 0.35rem;
+  border-bottom: 1px solid #e2e8f0;
 }
 .day-section {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.1rem;
 }
-.day-section + .day-section {
-  margin-top: 0.5rem;
-  border-top: 1px solid #e2e8f0;
-  padding-top: 0.25rem;
+.day-section.day-past {
+  opacity: 0.58;
+}
+.day-section.day-past .job-card {
+  filter: saturate(0.85);
+}
+.day-flag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.4rem;
+  border-radius: 999px;
+  margin-right: 0.25rem;
+  vertical-align: middle;
+}
+.day-flag-today {
+  background: #0284c7;
+  color: #fff;
+}
+.day-flag-tomorrow {
+  background: #e0f2fe;
+  color: #075985;
+}
+.day-section.day-today .day-header-sticky {
+  background: rgba(224, 242, 254, 0.95);
+  border-bottom-color: #7dd3fc;
 }
 
 .card-actions a.card-action {
   text-decoration: none;
-  min-height: 40px;
+  min-height: 44px;
 }
 .card-actions a.card-action:active {
   transform: scale(0.98);
+}
+
+#modal {
+  z-index: 200;
+}
+#emptyActions button {
+  min-height: 44px;
 }

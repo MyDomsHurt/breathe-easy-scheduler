@@ -73,19 +73,19 @@
   </header>
 
   <div id="techRangeBar" class="bg-white border-b border-slate-200 sticky z-40">
-    <div class="max-w-7xl mx-auto px-3 py-2 space-y-2">
-      <div class="flex gap-2 items-center">
-        <div class="flex gap-1.5 flex-1 overflow-x-auto no-scrollbar">
-          <button data-range="today" class="range-btn shrink-0 flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">Today</button>
-          <button data-range="this_week" class="range-btn shrink-0 flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-brand-600 text-white active:scale-95 transition">This Week</button>
-          <button data-range="next_week" class="range-btn shrink-0 flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">Next Week</button>
+    <div class="max-w-7xl mx-auto px-2 py-1.5 space-y-1.5">
+      <div class="flex gap-1.5 items-center">
+        <div class="flex gap-1 flex-1 min-w-0">
+          <button data-range="today" class="range-btn shrink-0 flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">Today</button>
+          <button data-range="this_week" class="range-btn shrink-0 flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white active:scale-95 transition">This Week</button>
+          <button data-range="next_week" class="range-btn shrink-0 flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">Next Week</button>
+        </div>
+        <div class="flex gap-1 shrink-0" id="densityToggle" role="group" aria-label="Card density">
+          <button type="button" id="densityCompact" class="density-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white active:scale-95 transition">Compact</button>
+          <button type="button" id="densityDetailed" class="density-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">Detailed</button>
         </div>
       </div>
-      <div class="flex gap-1.5" id="densityToggle" role="group" aria-label="Card density">
-        <button type="button" id="densityCompact" class="density-btn shrink-0 flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-brand-600 text-white active:scale-95 transition">Compact</button>
-        <button type="button" id="densityDetailed" class="density-btn shrink-0 flex-1 px-3 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">Detailed</button>
-      </div>
-      <div id="techTeamBar" class="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+      <div id="techTeamBar" class="flex gap-1 overflow-x-auto no-scrollbar">
       </div>
     </div>
   </div>
@@ -96,14 +96,15 @@
         <h2 id="viewTitle" class="font-semibold text-lg">All Jobs</h2>
       </div>
       <div id="jobsContainer" class="space-y-6"></div>
-      <div id="emptyState" class="hidden text-center py-16 text-slate-400">
-        <p class="text-lg">No jobs match the current filters</p>
+      <div id="emptyState" class="hidden text-center py-12 px-4">
+        <p id="emptyMessage" class="text-base font-medium text-slate-600">No jobs in this view</p>
+        <div id="emptyActions" class="mt-4 flex flex-col gap-2 max-w-xs mx-auto"></div>
       </div>
     </main>
   </div>
-  <div id="modal" class="fixed inset-0 z-[200] hidden">
+  <div id="modal" class="fixed inset-0 hidden">
     <div class="absolute inset-0 bg-black/50" id="modalBackdrop"></div>
-    <div class="absolute inset-x-3 top-16 bottom-6 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col" style="top: max(4rem, calc(env(safe-area-inset-top, 0px) + 3.5rem));">
+    <div class="absolute inset-x-4 top-10 bottom-10 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
       <div class="bg-brand-800 text-white px-5 py-4 flex items-start justify-between">
         <div>
           <h3 id="modalTitle" class="font-semibold text-lg"></h3>
