@@ -85,54 +85,54 @@ body.compact .max-w-7xl.mx-auto.px-4.py-5 {
   -webkit-appearance: none;
   font-family: inherit;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
-  color: #0f172a;
-  background-color: #f8fafc;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%23475569' d='M1 1.5l5 5 5-5'/></svg>");
+  color: #0c4a6e;
+  background-color: #e0f2fe;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%230369a1' d='M1 1.4h10L6 6.8z'/></svg>");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 12px 8px;
-  border: 1px solid #e2e8f0;
+  background-position: right 11px center;
+  background-size: 14px 9px;
+  border: 1.5px solid #38bdf8;
   border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.18);
   padding: 7px 34px 7px 12px;
-  min-height: 38px;
+  min-height: 40px;
 }
 .tech-select:focus {
-  outline: 2px solid #7dd3fc;
+  outline: 2px solid #0284c7;
   outline-offset: 1px;
 }
-.density-text {
+.density-seg {
   flex: 0 0 auto;
   display: flex;
-  align-items: center;
-  gap: 0.3rem;
+  align-items: stretch;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+}
+.density-seg button {
+  margin: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  min-height: 30px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #64748b;
+  line-height: 1;
   white-space: nowrap;
 }
-.density-text button {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  box-shadow: none;
-  min-height: 0;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  color: #94a3b8;
-  line-height: 1;
-}
-.density-text button.is-on,
-.density-text button.be-on {
-  color: #0f172a;
-  font-weight: 700;
-}
-.density-sep {
-  color: #cbd5e1;
-  font-size: 12px;
-  line-height: 1;
-  user-select: none;
+.density-seg button.is-on,
+.density-seg button.be-on {
+  background: #0284c7;
+  color: #fff;
+  font-weight: 800;
 }
 .range-seg {
   display: flex;
@@ -165,6 +165,9 @@ main {
 #jobsContainer .grid {
   max-width: 100%;
   min-width: 0;
+}
+#jobsContainer {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
 }
 #jobsContainer .grid {
   overflow-x: clip;

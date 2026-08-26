@@ -34,7 +34,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .be-brand {
@@ -136,6 +136,48 @@
   gap: 8px;
   flex-shrink: 0;
   margin-left: auto;
+  position: relative;
+}
+.be-acct-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 10px;
+  border: 1.5px solid var(--be-line-strong);
+  background: #fff;
+  color: var(--be-navy);
+  cursor: pointer;
+}
+.be-acct-btn[aria-expanded="true"] {
+  background: var(--be-soft);
+}
+.be-acct-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 160px;
+  background: #fff;
+  border: 1.5px solid var(--be-line-strong);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  padding: 8px;
+  z-index: 120;
+}
+.be-acct-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--be-navy);
+  padding: 6px 8px 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.be-acct-menu #logoutBtn {
+  width: 100%;
+  text-align: left;
 }
 .be-shell .user-chip,
 .be-shell .be-user-chip {
@@ -200,22 +242,29 @@
 
 @media (max-width: 640px) {
   .be-shell-inner {
-    padding: 8px 12px;
-    gap: 8px;
-    min-height: 0;
+    padding: 6px 10px;
+    gap: 6px;
+    min-height: 48px;
+    flex-wrap: nowrap;
   }
-  .be-brand { font-size: 0.92rem; }
+  .be-brand {
+    font-size: 0.78rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .be-switch a,
   .be-switch span {
-    padding: 6px 10px;
-    font-size: 0.72rem;
+    padding: 5px 8px;
+    font-size: 0.68rem;
   }
   .be-tools {
-    width: 100%;
-    justify-content: flex-start;
-    order: 3;
+    width: auto;
+    justify-content: flex-end;
+    order: 0;
   }
   .be-user { margin-left: auto; }
+  .be-acct-btn { width: 34px; height: 34px; }
 }
 
 #techRangeBar {

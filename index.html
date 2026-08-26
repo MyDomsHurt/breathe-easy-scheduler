@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Breathe-Easy · Schedule</title>
+  <title>Breathe-Easy · Live Schedule</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -27,8 +27,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/app.css?v=6" />
-  <link rel="stylesheet" href="css/be-shell.css" />
+  <link rel="stylesheet" href="css/app.css?v=7" />
+  <link rel="stylesheet" href="css/be-shell.css?v=2" />
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen" style="font-family:'Libre Franklin',system-ui,sans-serif">
 
@@ -36,8 +36,8 @@
     <div class="w-full max-w-sm">
       <div class="text-center mb-8">
         <div class="inline-flex w-14 h-14 rounded-2xl bg-brand-800 text-white items-center justify-center font-bold text-xl mb-3">BE</div>
-        <h1 class="text-xl font-semibold text-slate-800">Breathe-Easy</h1>
-        <p class="text-sm text-slate-500 mt-1">Sign in to view the schedule</p>
+        <h1 class="text-xl font-semibold text-slate-800">Live Schedule</h1>
+        <p class="text-sm text-slate-500 mt-1">Breathe-Easy · sign in to view today's jobs</p>
       </div>
 
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
@@ -52,7 +52,7 @@
           </svg>
           Sign in with Google
         </button>
-        <p class="text-xs text-center text-slate-400">Only authorised Breathe-Easy accounts can access this schedule.</p>
+        <p class="text-xs text-center text-slate-400">Only authorised Breathe-Easy accounts can access Live Schedule.</p>
       </div>
     </div>
   </div>
@@ -60,14 +60,22 @@
   <div id="appRoot" class="hidden">
   <header class="be-shell" id="be-shell">
     <div class="be-shell-inner">
-      <a class="be-brand" href="./">Breathe-Easy <span class="be-brand-ctx">· Schedule</span></a>
+      <a class="be-brand" href="./">Breathe-Easy <span class="be-brand-ctx">· Live Schedule</span></a>
       <nav class="be-switch" id="be-app-switch" aria-label="Switch app">
         <span class="active">Schedule</span>
         <a href="dashboard/">Performance</a>
       </nav>
       <div class="be-user">
-        <span id="userChip" class="be-user-chip hidden"></span>
-        <button id="logoutBtn" type="button">Sign out</button>
+        <button type="button" id="userMenuBtn" class="be-acct-btn" aria-label="Account" aria-haspopup="true" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="8" r="3.25" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M5.5 19c.8-3.1 3.3-5 6.5-5s5.7 1.9 6.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div id="userMenu" class="be-acct-menu hidden" role="menu">
+          <div id="userChip" class="be-acct-name hidden"></div>
+          <button id="logoutBtn" type="button" role="menuitem">Sign out</button>
+        </div>
       </div>
     </div>
   </header>
@@ -77,10 +85,9 @@
       <div class="tech-bar-row tech-bar-tech">
         <label class="sr-only" for="techTeamSelect">Technician</label>
         <select id="techTeamSelect" class="tech-select" aria-label="Technician"></select>
-        <div id="densityToggle" class="density-text" role="group" aria-label="Card density">
+        <div id="densityToggle" class="density-seg" role="group" aria-label="Card density">
           <button type="button" id="densityCompact">Compact</button>
-          <span class="density-sep" aria-hidden="true">·</span>
-          <button type="button" id="densityDetailed">Live</button>
+          <button type="button" id="densityDetailed">Detailed</button>
         </div>
       </div>
       <div class="tech-bar-row range-seg" role="group" aria-label="Timeframe">
@@ -121,7 +128,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js?v=4"></script>
-  <script src="js/shell-ui.js"></script>
+  <script src="js/shell-ui.js?v=2"></script>
   <script src="js/unit-stats.js"></script>
   <script src="js/app-nav.js"></script>
 </body>
