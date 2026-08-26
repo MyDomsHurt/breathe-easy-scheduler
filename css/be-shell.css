@@ -52,7 +52,6 @@
   font-weight: 700;
 }
 
-/* Universal app switcher */
 .be-switch {
   display: inline-flex;
   align-items: center;
@@ -96,59 +95,6 @@
   justify-content: flex-end;
 }
 
-/* Segmented role toggle */
-.be-shell #roleToggle {
-  display: inline-flex;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1.5px solid var(--be-line-strong);
-  background: #fff;
-}
-.be-shell .role-btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px !important;
-  font-size: 0.78rem !important;
-  font-weight: 600;
-  border: none !important;
-  background: transparent !important;
-  color: var(--be-mute) !important;
-  cursor: pointer;
-  font-family: inherit;
-  border-radius: 0 !important;
-  transition: background 0.15s, color 0.15s;
-}
-.be-shell .role-btn:hover {
-  color: var(--be-navy) !important;
-  background: var(--be-soft) !important;
-}
-.be-shell .role-btn.be-on {
-  background: var(--be-accent-soft) !important;
-  color: var(--be-navy-deep) !important;
-  font-weight: 700;
-}
-
-.be-shell #compactToggle {
-  padding: 6px 12px !important;
-  border-radius: 10px !important;
-  font-size: 0.78rem !important;
-  font-weight: 700;
-  border: 1.5px solid var(--be-line-strong) !important;
-  background: #fff !important;
-  color: var(--be-mute) !important;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.15s, color 0.15s;
-}
-.be-shell #compactToggle:hover {
-  color: var(--be-navy) !important;
-  background: var(--be-soft) !important;
-}
-.be-shell #compactToggle.be-on {
-  background: var(--be-accent-soft) !important;
-  color: var(--be-navy-deep) !important;
-}
-
 .be-chip {
   display: inline-flex;
   align-items: center;
@@ -163,19 +109,10 @@
 .be-chip-amber { background: #fef3c7; color: #b45309; }
 .be-chip-green { background: #d1fae5; color: #047857; }
 
-/* Override Tailwind chip classes from old dark header */
-.be-shell #jobCount,
-.be-shell #userChip {
+.be-shell #userChip,
+.be-shell .be-user-chip {
   background: var(--be-soft) !important;
   color: var(--be-navy) !important;
-}
-.be-shell #returnCount {
-  background: #fef3c7 !important;
-  color: #b45309 !important;
-}
-.be-shell #revenueTotal {
-  background: #d1fae5 !important;
-  color: #047857 !important;
 }
 .be-shell #logoutBtn {
   padding: 6px 12px !important;
@@ -198,8 +135,10 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  margin-left: auto;
 }
-.be-shell .user-chip {
+.be-shell .user-chip,
+.be-shell .be-user-chip {
   display: inline-flex;
   align-items: center;
   padding: 5px 10px;

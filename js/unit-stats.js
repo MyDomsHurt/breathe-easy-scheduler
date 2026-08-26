@@ -58,13 +58,10 @@
     });
     const panel = document.getElementById('statsPanel');
     if (!panel) return;
-    const isTech = typeof roleMode !== 'undefined' && roleMode === 'tech';
     panel.innerHTML = TEAMS.map(function (t) {
       const s = byTeam[t];
       if (s.jobs === 0) return '';
-      const right = isTech
-        ? s.jobs + ' job' + (s.jobs !== 1 ? 's' : '')
-        : s.jobs + ' · ' + (typeof formatMoney === 'function' ? formatMoney(s.amount) : s.amount);
+      const right = s.jobs + ' job' + (s.jobs !== 1 ? 's' : '');
       return (
         '<div class="py-1 border-b border-slate-100 last:border-0">' +
         '<div class="flex justify-between items-center"><span class="font-medium">' + t + '</span>' +

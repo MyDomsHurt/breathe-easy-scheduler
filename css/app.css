@@ -28,18 +28,10 @@
 #modalBody::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
 @media (max-width: 1023px) {
-  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
-  body.role-tech aside > .text-xs.text-slate-400 { display: none !important; }
-  body.role-tech aside > .bg-white.rounded-xl:first-of-type { padding: 0.75rem !important; }
-  body.role-tech .max-w-7xl.mx-auto.px-4.py-5 { padding-top: 0.5rem !important; padding-bottom: 1rem !important; }
-  body.role-tech main > .flex.items-center.justify-between.mb-4 { margin-bottom: 0.5rem !important; }
-  body.role-tech #viewTitle { font-size: 1rem; }
-  body.role-tech .job-card { padding: 0.75rem; }
-}
-
-@media (min-width: 1024px) {
-  body.role-tech aside > .bg-white.rounded-xl:nth-of-type(2),
-  body.role-tech aside > .text-xs.text-slate-400 { display: none !important; }
+  .max-w-7xl.mx-auto.px-4.py-5 { padding-top: 0.5rem !important; padding-bottom: 1rem !important; }
+  main > .flex.items-center.justify-between.mb-4 { margin-bottom: 0.5rem !important; }
+  #viewTitle { font-size: 1rem; }
+  .job-card { padding: 0.75rem; }
 }
 
 body.compact .job-card.compact-card {
@@ -55,13 +47,11 @@ body.compact .job-card.compact-card:active {
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 body.compact #jobsContainer > section { margin-bottom: 0.75rem !important; }
-body.compact.role-tech #viewTitle,
-body.compact.role-tech main > .flex.items-center.justify-between { display: none !important; }
+body.compact #viewTitle,
+body.compact main > .flex.items-center.justify-between { display: none !important; }
 body.compact .max-w-7xl.mx-auto.px-4.py-5 {
   padding-top: 0.4rem !important;
   padding-bottom: 0.75rem !important;
-}
-body.compact.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
   padding-left: 0.5rem !important;
   padding-right: 0.5rem !important;
 }
@@ -75,23 +65,9 @@ body.compact.role-tech .max-w-7xl.mx-auto.px-4.py-5 {
   white-space: nowrap;
 }
 
-body.role-tech aside {
-  display: none !important;
-}
-body.role-tech .max-w-7xl.mx-auto.px-4.py-5.grid {
-  display: block !important;
-}
-body.role-tech main {
+main {
   width: 100% !important;
   max-width: 100% !important;
-}
-
-body.role-tech header .max-w-7xl {
-  flex-wrap: nowrap;
-}
-body.role-tech #jobCount,
-body.role-tech #returnCount {
-  display: none !important;
 }
 
 #jobsContainer,
@@ -103,16 +79,6 @@ body.role-tech #returnCount {
 }
 
 .day-header-sticky {
-  position: sticky;
-  top: var(--app-header-h, 57px);
-  z-index: 20;
-  background: rgba(248, 250, 252, 0.97);
-  backdrop-filter: blur(6px);
-  padding-top: 0.35rem;
-  padding-bottom: 0.35rem;
-}
-body.role-tech .day-header-sticky,
-body.compact.role-tech .day-header-sticky {
   position: static;
   top: auto;
   backdrop-filter: none;
@@ -124,13 +90,12 @@ body.compact.role-tech .day-header-sticky {
 .day-section {
   margin-bottom: 1.25rem;
 }
-body.role-tech .day-section + .day-section {
+.day-section + .day-section {
   margin-top: 0.5rem;
   border-top: 1px solid #e2e8f0;
   padding-top: 0.25rem;
 }
 
-/* Full-card Call / Maps actions */
 .card-actions a.card-action {
   text-decoration: none;
   min-height: 40px;

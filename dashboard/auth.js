@@ -10,14 +10,16 @@
   };
 
   const ALLOWED = [
+    "iamruby112@gmail.com",
     "iggi.king@gmail.com",
+    "itstartswiththemind@gmail.com",
     "jefflamb1992@gmail.com",
+    "joshua@breathe-easyhk.com",
     "matthewgross2001@gmail.com",
+    "n.marie.lamb@gmail.com",
     "neltrestium@gmail.com",
     "sudor23@gmail.com",
-    "tiagogiri334@gmail.com",
-    "iamruby112@gmail.com",
-    "joshua@breathe-easyhk.com"
+    "tiagogiri334@gmail.com"
   ].map(function (e) { return e.toLowerCase(); });
 
   if (!window.firebase) {

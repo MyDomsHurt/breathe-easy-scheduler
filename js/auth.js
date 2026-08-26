@@ -1,4 +1,4 @@
-/* Breathe-Easy Scheduler — Firebase Google Sign-In + allowlist roles */
+/* Breathe-Easy Scheduler — Firebase Google Sign-In + email allowlist */
 (function () {
   const firebaseConfig = {
     apiKey: "AIzaSyBnfbQ5qlfo0DD7HkryszeNGRclvj0i99Q",
@@ -9,32 +9,21 @@
     appId: "1:42449914362:web:0c727c239807c6da773c43"
   };
 
-  /**
-   * office  = full access (Office + Technician toggle)
-   * tech    = Technician view only (no Office, no toggle)
-   *
-   * Add / move emails anytime — no other code changes needed.
-   */
-  const USERS = {
-    // Office
-    "jefflamb1992@gmail.com": { role: "office" },
+  const ALLOWED = [
+    "iamruby112@gmail.com",
+    "iggi.king@gmail.com",
+    "itstartswiththemind@gmail.com",
+    "jefflamb1992@gmail.com",
+    "joshua@breathe-easyhk.com",
+    "matthewgross2001@gmail.com",
+    "n.marie.lamb@gmail.com",
+    "neltrestium@gmail.com",
+    "sudor23@gmail.com",
+    "tiagogiri334@gmail.com"
+  ].map(function (e) { return e.toLowerCase(); });
 
-    // Technicians
-    "joshua@breathe-easyhk.com": { role: "tech" },
-    "iamruby112@gmail.com": { role: "tech" },
-    "matthewgross2001@gmail.com": { role: "tech" },
-    "tiagogiri334@gmail.com": { role: "tech" },
-    "iggi.king@gmail.com": { role: "tech" },
-    "neltrestium@gmail.com": { role: "tech" },
-    "sudor23@gmail.com": { role: "tech" },
-    "itstartswiththemind@gmail.com": { role: "tech" },
-    "n.marie.lamb@gmail.com": { role: "tech" }
-  };
-
-  function resolveRole(email) {
-    const key = (email || "").toLowerCase().trim();
-    const entry = USERS[key];
-    return entry ? entry.role : null;
+  function isAllowed(email) {
+    return ALLOWED.indexOf((email || "").toLowerCase().trim()) !== -1;
   }
 
   function showLogin() {
@@ -107,17 +96,17 @@
       });
     }
 
-    // Local preview bypass (same pattern as other BE apps)
     const isLocal =
       location.hostname === "localhost" ||
       location.hostname === "127.0.0.1" ||
       location.protocol === "file:";
 
     if (isLocal) {
-      window.__forcedRole = "office";
+      const localUser = { email: "local@preview", displayName: "Local preview" };
+      updateUserChip(localUser);
       showApp();
       if (typeof window.onAuthReady === "function") {
-        window.onAuthReady("office", { email: "local@preview", displayName: "Local preview" });
+        window.onAuthReady(localUser);
       }
       return;
     }
@@ -129,8 +118,7 @@
         return;
       }
 
-      const role = resolveRole(user.email);
-      if (!role) {
+      if (!isAllowed(user.email)) {
         auth.signOut().then(function () {
           showLogin();
           setError("This Google account is not authorised for the scheduler.");
@@ -138,12 +126,11 @@
         return;
       }
 
-      window.__forcedRole = role;
       updateUserChip(user);
       showApp();
 
       if (typeof window.onAuthReady === "function") {
-        window.onAuthReady(role, user);
+        window.onAuthReady(user);
       }
     });
   }
