@@ -101,10 +101,7 @@ main {
   border-bottom: 1px solid #e2e8f0;
 }
 .day-section.day-past {
-  opacity: 0.58;
-}
-.day-section.day-past .job-card {
-  filter: saturate(0.85);
+  opacity: 0.88;
 }
 .day-flag {
   display: inline-block;
