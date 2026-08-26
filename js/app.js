@@ -79,13 +79,12 @@ function displayTime(j) {
 
 function liveAcsBadges(acs) {
   if (!acs) return '';
-  const re = /(\d+)\s*([A-Za-z]+)/g;
+  const re = /(?<!\d)(\d{1,2})\s*(BEP|UC|S|W|B|C)\b/gi;
   const bits = [];
   let m;
   while ((m = re.exec(String(acs))) !== null) {
     const type = m[2].toUpperCase();
-    const letter = type === 'BEP' ? 'x' : type.charAt(0);
-    const kind = letter === 'S' ? 's' : letter === 'W' ? 'w' : letter === 'B' ? 'b' : 'x';
+    const kind = type === 'S' ? 's' : type === 'W' ? 'w' : type === 'B' ? 'b' : 'x';
     bits.push('<span class="live-u live-u-' + kind + '">' + esc(m[1] + type) + '</span>');
   }
   if (!bits.length) return '';
