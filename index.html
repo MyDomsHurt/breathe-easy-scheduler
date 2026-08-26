@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/app.css?v=3" />
+  <link rel="stylesheet" href="css/app.css?v=4" />
   <link rel="stylesheet" href="css/be-shell.css" />
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen" style="font-family:'Libre Franklin',system-ui,sans-serif">
@@ -73,19 +73,20 @@
   </header>
 
   <div id="techRangeBar" class="bg-white border-b border-slate-200 sticky z-40">
-    <div class="max-w-7xl mx-auto px-2 py-1.5 space-y-1.5">
-      <div class="flex gap-1.5 items-center">
-        <div class="flex gap-1 flex-1 min-w-0">
-          <button data-range="today" class="range-btn shrink-0 flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">Today</button>
-          <button data-range="this_week" class="range-btn shrink-0 flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white active:scale-95 transition">This Week</button>
-          <button data-range="next_week" class="range-btn shrink-0 flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">Next Week</button>
-        </div>
-        <div class="flex gap-1 shrink-0" id="densityToggle" role="group" aria-label="Card density">
-          <button type="button" id="densityCompact" class="density-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white active:scale-95 transition">Compact</button>
-          <button type="button" id="densityDetailed" class="density-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 active:scale-95 transition">Detailed</button>
+    <div class="tech-bar-inner">
+      <div class="tech-bar-row tech-bar-tech">
+        <label class="sr-only" for="techTeamSelect">Technician</label>
+        <select id="techTeamSelect" class="tech-select" aria-label="Technician"></select>
+        <div id="densityToggle" class="density-text" role="group" aria-label="Card density">
+          <button type="button" id="densityCompact">Compact</button>
+          <span class="density-sep" aria-hidden="true">·</span>
+          <button type="button" id="densityDetailed">Detailed</button>
         </div>
       </div>
-      <div id="techTeamBar" class="flex gap-1 overflow-x-auto no-scrollbar">
+      <div class="tech-bar-row range-seg" role="group" aria-label="Timeframe">
+        <button type="button" data-range="today" class="range-btn bg-slate-100 text-slate-700">Today</button>
+        <button type="button" data-range="this_week" class="range-btn bg-brand-600 text-white">This Week</button>
+        <button type="button" data-range="next_week" class="range-btn bg-slate-100 text-slate-700">Next Week</button>
       </div>
     </div>
   </div>

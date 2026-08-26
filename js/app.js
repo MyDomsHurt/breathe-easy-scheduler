@@ -134,7 +134,6 @@ async function init() {
 
 function buildTeamButtons() {
   const sidebar = document.getElementById('teamFilters');
-  const techBar = document.getElementById('techTeamBar');
   function fill(container, includeAll) {
     if (!container) return;
     container.innerHTML = '';
@@ -150,7 +149,19 @@ function buildTeamButtons() {
     });
   }
   fill(sidebar, true);
-  fill(techBar, false);
+  const sel = document.getElementById('techTeamSelect');
+  if (sel) {
+    const current = (!currentFilters.team || currentFilters.team === 'all') ? 'Matthew' : currentFilters.team;
+    sel.innerHTML = '';
+    TEAMS.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t;
+      if (t === current) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.value = current;
+  }
 }
 
 function buildDateSelect() {
@@ -188,9 +199,14 @@ function bindEvents() {
     applyFilters();
   }
   const teamFiltersEl = document.getElementById('teamFilters');
-  const techTeamBar = document.getElementById('techTeamBar');
   if (teamFiltersEl) teamFiltersEl.addEventListener('click', onTeamClick);
-  if (techTeamBar) techTeamBar.addEventListener('click', onTeamClick);
+  const techSelect = document.getElementById('techTeamSelect');
+  if (techSelect) {
+    techSelect.addEventListener('change', e => {
+      currentFilters.team = e.target.value || 'Matthew';
+      applyFilters();
+    });
+  }
   document.querySelectorAll('.type-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       setActive('.type-btn', btn);
@@ -294,10 +310,8 @@ function applyCompactUI() {
   document.body.classList.toggle('compact', compactMode);
   function paint(btn, on) {
     if (!btn) return;
-    btn.classList.toggle('bg-brand-600', on);
-    btn.classList.toggle('text-white', on);
-    btn.classList.toggle('bg-slate-100', !on);
-    btn.classList.toggle('text-slate-700', !on);
+    btn.classList.toggle('is-on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
   }
   paint(document.getElementById('densityCompact'), compactMode);
   paint(document.getElementById('densityDetailed'), !compactMode);

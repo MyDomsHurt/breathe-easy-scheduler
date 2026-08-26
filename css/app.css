@@ -60,15 +60,98 @@ body.compact .max-w-7xl.mx-auto.px-4.py-5 {
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
   z-index: 40;
 }
-#techTeamBar .team-btn {
+.tech-bar-inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 6px 10px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tech-bar-row {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.tech-bar-tech {
+  gap: 10px;
+}
+.tech-select {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #0f172a;
+  background-color: #f8fafc;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%23475569' d='M1 1.5l5 5 5-5'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 7px 34px 7px 12px;
+  min-height: 38px;
+}
+.tech-select:focus {
+  outline: 2px solid #7dd3fc;
+  outline-offset: 1px;
+}
+.density-text {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
   white-space: nowrap;
 }
-#densityToggle {
-  max-width: 100%;
+.density-text button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  min-height: 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: #94a3b8;
+  line-height: 1;
 }
-.range-btn,
-.density-btn {
-  min-height: 36px;
+.density-text button.is-on,
+.density-text button.be-on {
+  color: #0f172a;
+  font-weight: 700;
+}
+.density-sep {
+  color: #cbd5e1;
+  font-size: 12px;
+  line-height: 1;
+  user-select: none;
+}
+.range-seg {
+  display: flex;
+  width: 100%;
+  gap: 3px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 2px;
+}
+.range-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 34px;
+  border: 0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0 4px;
 }
 
 main {
