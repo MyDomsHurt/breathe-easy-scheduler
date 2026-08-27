@@ -50,6 +50,56 @@ const DISTRICT_COLORS = {
 };
 const DISTRICT_FALLBACK = { bg: '#F3F4F6', border: '#D1D5DB', text: '#374151' };
 
+/* Area tags already live on job.district — never show or search them. */
+const DISTRICT_TAG = 'HKN|HKS|HKIS|KLN|TKO|TSW|N\\s*-?\\s*TW?|NTW?|S\\s*-?\\s*K|L\\s*-?\\s*[TM]|LT|LM';
+
+function tidyAddress(s) {
+  return String(s || '')
+    .replace(/\r/g, '')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\s*\n\s*/g, ', ')
+    .replace(/,{2,}/g, ',')
+    .replace(/\s+,/g, ',')
+    .replace(/,\s+/g, ', ')
+    .replace(/[,\s;，、]+$/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function extractMapsPin(raw) {
+  const m = String(raw || '').match(/https?:\/\/(?:maps\.app\.goo\.gl\/|goo\.gl\/maps\/|maps\.google\.[^\s/]+\/)[^\s]+/i);
+  if (!m) return '';
+  return m[0].replace(/[),.;]+$/g, '');
+}
+
+function stripDistrictTag(raw) {
+  if (!raw) return '';
+  let a = String(raw);
+  a = a.replace(/\/\/\s*pin:?\s*/gi, ' ');
+  a = a.replace(/https?:\/\/(?:maps\.app\.goo\.gl\/|goo\.gl\/maps\/|maps\.google\.)[^\s]+/gi, ' ');
+  a = a.replace(new RegExp('[\\(（]{1,2}\\s*(?:' + DISTRICT_TAG + ')\\s*[\\)）(]*', 'gi'), ' ');
+  a = a.replace(new RegExp('[,，\\s]+(?:' + DISTRICT_TAG + ')\\s*$', 'i'), '');
+  a = a.replace(/[,，\s]+(?:HK|N\.?\s*T\.?)\s*$/i, '');
+  a = a.replace(/\(\s*[A-Z]{2,5}\s*-\s*[A-Z]{1,5}\s*\)\s*$/g, '');
+  a = a.replace(/\(\s*\d+\s*[SWBCU](?:\s*[+\/&]\s*\d+\s*[SWBCU])*\s*\)/gi, ' ');
+  a = a.replace(/,+\s*[a-z]?\s*$/g, '');
+  return tidyAddress(a);
+}
+
+function displayAddress(raw) {
+  const out = tidyAddress(stripDistrictTag(raw).replace(/\s*need a pin\s*$/i, ''));
+  return out || String(raw || '').trim();
+}
+
+function mapsHref(raw) {
+  if (!raw) return null;
+  const pin = extractMapsPin(raw);
+  if (pin) return pin;
+  const q = cleanAddressForMaps(raw);
+  if (!q) return null;
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+}
+
 function timeToMinutes(t) {
   if (!t) return 9999;
   const s = String(t).toLowerCase().replace(/\s+/g, '');
@@ -650,8 +700,9 @@ function jobCard(j) {
     const teamChip = showTeam
       ? '<span class="text-[10px] font-medium px-1 py-0.5 rounded ' + (TEAM_COLORS[j.team_lead] || 'bg-slate-100') + '">' + esc(j.team_lead) + '</span>'
       : '';
-    const shortAddr = j.address
-      ? '<p class="text-[10px] leading-tight text-slate-600 mt-1 line-clamp-2">' + esc(j.address) + '</p>'
+    const shownAddr = displayAddress(j.address);
+    const shortAddr = shownAddr
+      ? '<p class="text-[10px] leading-tight text-slate-600 mt-1 line-clamp-2">' + esc(shownAddr) + '</p>'
       : '';
     return '<article class="job-card compact-card rounded-xl cursor-pointer active:opacity-90 overflow-hidden" data-id="' + esc(j.job_id) + '" style="' + distBar + '">' +
       '<div class="p-2 min-h-[100px] flex flex-col">' +
@@ -668,8 +719,9 @@ function jobCard(j) {
 
   const showTeam = currentFilters.team === 'all';
   const unitsBit = liveAcsBadges(j.acs);
-  const addressBlock = j.address
-    ? '<p class="live-addr">' + esc(j.address) + '</p>'
+  const shownAddr = displayAddress(j.address);
+  const addressBlock = shownAddr
+    ? '<p class="live-addr">' + esc(shownAddr) + '</p>'
     : '';
   const notesBlock = j.notes
     ? '<p class="live-notes">' + esc(j.notes) + '</p>'
@@ -699,25 +751,33 @@ function bindCardClicks() {
 
 function cleanAddressForMaps(raw) {
   if (!raw) return '';
-  let a = String(raw).trim();
-  a = a.replace(/^(Flat|Unit|Room|Apt|Apartment|Suite)\s*[A-Z0-9\-\/]+[,\s]*/i, '')
+  const street = displayAddress(raw);
+  let a = street;
+  a = a.replace(/\s*\/\/\s*[\s\S]*$/, '');
+  a = a.replace(/\s*need a pin\s*/gi, ' ');
+  a = a.replace(/^\(\s*\d+\s*[A-Za-z][^)]*\)\s*/, '');
+  a = a.replace(/\(\s*\d+\s*[SWBCU][A-Za-z0-9+\/ ]*\)\s*$/i, '');
+  a = a.replace(/\b(G\/F|GF|G\.F\.|Ground\s*Floor)\b[,\s]*/gi, '');
+  a = a.replace(/^(Flat|Unit|Room|Apt|Apartment|Suite|Hse|House|Rm)\s*[A-Z0-9\-\/]+[,\s]*/i, '')
     .replace(/\b\d{1,2}\s*(\/F|F|th\s*Floor|st\s*Floor|nd\s*Floor|rd\s*Floor|Floor)\b[,\s]*/gi, '')
     .replace(/\b(Floor|Level)\s*\d{1,2}\b[,\s]*/gi, '')
     .replace(/^(Tower|Block|Blk)\s*[A-Z0-9\-]+[,\s]*/i, '')
-    .replace(/^\d{1,3}[A-Z]?\s*[,\-]\s*/i, '')
-    .replace(/^[,\s\-]+/, '').replace(/\s{2,}/g, ' ').trim();
-  if (a.length < 8) return raw.trim();
+    .replace(/^\d{1,3}[A-Z]?\s*[,\-]\s*/i, '');
+  a = tidyAddress(a);
+  if (a.length < 8) a = street;
+  if (a && !/hong\s*kong/i.test(a)) a += ', Hong Kong';
   return a;
 }
 
 function openModal(j) {
   document.getElementById('modalTitle').textContent = j.client_name;
   document.getElementById('modalSub').textContent = formatDate(j.date) + ' \u00b7 ' + displayTime(j) + ' \u00b7 ' + j.team_lead;
-  const mapsUrl = j.address ? 'https://maps.google.com/?q=' + encodeURIComponent(cleanAddressForMaps(j.address)) : null;
+  const shownAddr = displayAddress(j.address);
+  const mapsUrl = mapsHref(j.address);
   const mapsLink = mapsUrl
     ? '<a href="' + mapsUrl + '" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 mt-2 w-full px-3 py-3 rounded-xl bg-sky-50 border border-sky-200 text-sky-800 font-bold text-sm active:bg-sky-100">Open in Maps</a>'
     : '';
-  const addressHtml = j.address ? '<div class="text-slate-800 break-words">' + esc(j.address) + '</div>' + mapsLink : '\u2014';
+  const addressHtml = shownAddr ? '<div class="text-slate-800 break-words">' + esc(shownAddr) + '</div>' + mapsLink : '\u2014';
   const tel = j.mobile ? String(j.mobile).replace(/[^\d+]/g, '') : '';
   const mobileHtml = tel
     ? '<a href="tel:' + esc(tel) + '" class="inline-flex items-center justify-center min-h-[44px] font-semibold text-emerald-800">' + esc(j.mobile) + '</a>'
