@@ -17,6 +17,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  flex: 0 0 auto;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -210,12 +211,33 @@
   background: var(--be-soft);
 }
 
+.be-page-nav {
+  width: 100%;
+  border-top: 1px solid var(--be-line);
+  overflow: visible;
+}
+.be-page-nav .nav-links {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4px 16px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: visible;
+  width: 100%;
+  flex: none;
+  min-width: 0;
+}
+
 .be-shell .nav-links {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
   align-items: center;
   min-width: 0;
+  overflow: visible;
 }
 .be-shell .nav-links a,
 .be-shell .nav-compete {
@@ -265,6 +287,9 @@
   }
   .be-user { margin-left: auto; }
   .be-acct-btn { width: 34px; height: 34px; }
+  .be-page-nav .nav-links {
+    padding: 2px 10px 8px;
+  }
 }
 
 #techRangeBar {

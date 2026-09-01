@@ -39,17 +39,54 @@ body.auth-ready .main {
   min-height: 0;
 }
 
-/* Header stays one row: brand, Schedule | Performance, account */
+/* Row 1: brand, Schedule | Performance, account */
+header.be-shell {
+  flex: 0 0 auto;
+}
 header.be-shell .be-shell-inner {
   flex-wrap: nowrap;
 }
-header.be-shell .be-tools {
-  flex-wrap: nowrap;
-  min-width: 0;
-  overflow-x: auto;
+
+/* Row 2: Full Team, technicians, Competition — wrap, never clip */
+header.be-shell .be-page-nav {
+  width: 100%;
+  overflow: visible;
 }
+header.be-shell .be-page-nav .nav-links,
 header.be-shell .nav-links {
-  flex-wrap: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: visible;
+  overflow-x: visible;
+  justify-content: flex-start;
+  flex: none;
+  width: 100%;
+  min-width: 0;
+}
+header.be-shell .nav-links a,
+header.be-shell .nav-links .nav-compete {
+  flex: 0 0 auto;
+}
+header.be-shell .nav-links a[href="#/team"] {
+  order: -1;
+}
+@media (max-width: 768px) {
+  header.be-shell .be-page-nav .nav-links,
+  header.be-shell .nav-links {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    justify-content: flex-start;
+  }
+  header.be-shell .be-brand {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  header.be-shell .be-brand-ctx {
+    display: none;
+  }
+  header.be-shell .be-user {
+    flex-shrink: 0;
+  }
 }
 
 /* Schedule button — clear on light Performance nav */
